@@ -1,6 +1,7 @@
 import type { ColumnId, ImageItem } from "./layout-types";
 
-export const STACK_GAP = 16;
+/** Vertical spacing between stacked images (0 = flush / stuck together). */
+export const STACK_GAP = 0;
 
 /**
  * Keep image inside column horizontally.
@@ -81,7 +82,7 @@ export function ensureColumnOrders(images: ImageItem[]): ImageItem[] {
 }
 
 /**
- * Pack images in a column top-to-bottom with gap.
+ * Pack images in a column top-to-bottom (flush when gap = 0).
  * Y of each item = sum of heights of items above + gaps.
  */
 export function reflowColumn(
