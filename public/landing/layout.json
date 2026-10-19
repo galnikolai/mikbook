@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "columnWidths": {
+    "col1": "22%",
+    "col2": "39%",
+    "col3": "39%"
+  },
+  "contentHeight": 2200,
+  "images": [
+    {
+      "id": "c2-1",
+      "column": 2,
+      "src": "/landing/img-01.jpg",
+      "x": 8,
+      "y": 72,
+      "order": 0,
+      "scale": 1,
+      "width": 72,
+      "zIndex": 1
+    },
+    {
+      "id": "c2-2",
+      "column": 2,
+      "src": "/landing/img-02.jpg",
+      "x": 18,
+      "y": 72,
+      "order": 1,
+      "scale": 1,
+      "width": 58,
+      "zIndex": 2
+    },
+    {
+      "id": "c2-3",
+      "column": 2,
+      "src": "/landing/img-03.jpg",
+      "x": 5,
+      "y": 72,
+      "order": 2,
+      "scale": 1,
+      "width": 65,
+      "href": "https://www.instagram.com/",
+      "zIndex": 1
+    },
+    {
+      "id": "c2-4",
+      "column": 2,
+      "src": "/landing/img-04.jpg",
+      "x": 22,
+      "y": 72,
+      "order": 3,
+      "scale": 1,
+      "width": 70,
+      "zIndex": 1
+    },
+    {
+      "id": "c3-1",
+      "column": 3,
+      "src": "/landing/img-05.jpg",
+      "x": 10,
+      "y": 24,
+      "order": 0,
+      "scale": 1,
+      "width": 78,
+      "zIndex": 1
+    },
+    {
+      "id": "c3-2",
+      "column": 3,
+      "src": "/landing/img-06.jpg",
+      "x": 5,
+      "y": 24,
+      "order": 1,
+      "scale": 1,
+      "width": 68,
+      "zIndex": 2
+    },
+    {
+      "id": "c3-3",
+      "column": 3,
+      "src": "/landing/img-07.jpg",
+      "x": 18,
+      "y": 24,
+      "order": 2,
+      "scale": 1,
+      "width": 62,
+      "zIndex": 1
+    },
+    {
+      "id": "c3-4",
+      "column": 3,
+      "src": "/landing/img-08.jpg",
+      "x": 8,
+      "y": 24,
+      "order": 3,
+      "scale": 1,
+      "width": 80,
+      "zIndex": 1
+    }
+  ]
+}

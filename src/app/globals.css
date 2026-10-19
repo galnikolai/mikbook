@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+:root {
+  --landing-bg: #f3efe8;
+  --landing-fg: #111111;
+  /* Default column ratios — override from JS via inline style on .landing-shell */
+  --col-1: 22%;
+  --col-2: 39%;
+  --col-3: 39%;
+  --background: var(--landing-bg);
+  --foreground: var(--landing-fg);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--landing-bg);
+  color: var(--landing-fg);
+  font-family: var(--font-geist-sans), Helvetica, Arial, sans-serif;
+  margin: 0;
+}
+
+.landing-shell {
+  background: var(--landing-bg);
+  color: var(--landing-fg);
+}
+
+.landing-desktop {
+  display: none;
+}
+
+.landing-mobile {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .landing-desktop {
+    display: grid;
+    grid-template-columns: var(--col-1) var(--col-2) var(--col-3);
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .landing-mobile {
+    display: none;
+  }
+}
+
+.landing-col {
+  min-width: 0;
+  height: 100%;
+}
+
+.landing-col--fixed {
+  overflow: hidden;
+  padding: 1.25rem 1.1rem;
+}
+
+.landing-col--scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+.landing-col--scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+/* Hide page scrollbar on mobile stack as well */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+.landing-scroll-inner {
+  position: relative;
+  width: 100%;
+  padding: 1rem 0.75rem 3rem;
+}
+
+.landing-col1-inner {
+  font-size: 13px;
+  line-height: 1.45;
+  max-width: 16rem;
+}
+
+.landing-brand {
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+}
+
+.landing-col1-inner p {
+  margin: 0 0 0.9rem;
+}
+
+.landing-cta {
+  margin-top: 1.25rem !important;
+}
+
+.landing-meta {
+  margin-top: 1.5rem;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.landing-meta a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.landing-col2-intro {
+  position: relative;
+  z-index: 5;
+  padding: 0.25rem 0.5rem 1rem;
+}
+
+.landing-mobile-block {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.subscribe-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: var(--landing-bg);
+  color: var(--landing-fg);
+  max-width: 28rem;
+}
+
+.subscribe-page a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+.subscribe-page__meta {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+}

@@ -1,0 +1,10 @@
+# Local-only / heavy files — do not upload to Vercel
+content/books/*.pdf
+node_modules
+.next
+.git
+.DS_Store
+*.pem
+.env*
+AGENTS.md
+docs

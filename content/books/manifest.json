@@ -1,0 +1,15 @@
+{
+  "books": [
+    {
+      "id": "mikbook-medecine-4e",
+      "title": "MIKBOOK Médecine",
+      "edition": "4e",
+      "authors": ["Mikaël Guedj", "Olivier Hoffman"],
+      "publisher": "Éditions Eyrolles",
+      "format": "pdf",
+      "file": "mikbook-medecine-4e.pdf",
+      "path": "content/books/mikbook-medecine-4e.pdf",
+      "note": "Файл локальный (~148MB), не коммитится в git — см. .gitignore"
+    }
+  ]
+}
