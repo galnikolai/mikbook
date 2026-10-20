@@ -1,6 +1,7 @@
 import type { ColumnId, ImageItem } from "./layout-types";
 
-export const STACK_GAP = 16;
+/** Vertical spacing between stacked images (0 = flush). */
+export const STACK_GAP = 0;
 
 /**
  * Keep image inside column horizontally.
@@ -40,9 +41,10 @@ export function clampImageInColumn<T extends Pick<ImageItem, "x" | "width" | "sc
   };
 }
 
+/** Stack plane starts at 0 — headers live outside the image plane. */
 export const STACK_START_Y: Record<ColumnId, number> = {
-  2: 72,
-  3: 24,
+  2: 0,
+  3: 0,
 };
 
 /** Effective rendered height in px for a given column width. */
@@ -81,7 +83,7 @@ export function ensureColumnOrders(images: ImageItem[]): ImageItem[] {
 }
 
 /**
- * Pack images in a column top-to-bottom with gap.
+ * Pack images in a column top-to-bottom (flush when gap = 0).
  * Y of each item = sum of heights of items above + gaps.
  */
 export function reflowColumn(
@@ -99,7 +101,7 @@ export function reflowColumn(
   const packed = col.map((img, index) => {
     const aspect = aspects[img.id] ?? img.naturalAspect ?? 1.25;
     const clamped = clampImageInColumn(img);
-    const next = { ...clamped, order: index, y: Math.round(y) };
+    const next = { ...clamped, order: index, y: Math.floor(y) };
     y += stackedHeight(clamped, columnWidthPx, aspect) + gap;
     return next;
   });

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import type { ColumnId, ImageItem } from "@/lib/landing/layout-types";
-import { sortByOrder, stackedHeight, STACK_GAP, STACK_START_Y } from "@/lib/landing/stack";
+import { sortByOrder, stackedHeight, STACK_GAP } from "@/lib/landing/stack";
 import { ImageLayer } from "./ImageLayer";
 
 type Props = {
@@ -30,11 +30,11 @@ export function MagnetColumn({
   header,
   className = "",
 }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
   const sorted = sortByOrder(images.filter((i) => i.column === column));
 
   useEffect(() => {
-    const el = ref.current;
+    const el = stackRef.current;
     if (!el) return;
     const report = () => onColumnWidth(column, el.clientWidth);
     report();
@@ -43,23 +43,26 @@ export function MagnetColumn({
     return () => ro.disconnect();
   }, [column, onColumnWidth]);
 
-  // content height = last image bottom
-  let stackBottom = STACK_START_Y[column];
-  const colW = ref.current?.clientWidth || 400;
+  let stackBottom = 0;
+  const colW = stackRef.current?.clientWidth || 400;
   for (const img of sorted) {
     stackBottom +=
       stackedHeight(img, colW, img.naturalAspect ?? 1.25) + STACK_GAP;
   }
-  const minH = Math.max(contentHeight, Math.round(stackBottom + 80));
+  const minH = Math.max(
+    header ? 0 : contentHeight,
+    Math.round(stackBottom + 80),
+  );
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      data-image-column={column}
-    >
-      <div className="relative p-3 pb-12" style={{ minHeight: minH }}>
-        {header}
+    <div className={className}>
+      {header ? <div className="px-3 pt-3 pb-2">{header}</div> : null}
+      <div
+        ref={stackRef}
+        className="relative w-full"
+        data-image-column={column}
+        style={{ minHeight: minH }}
+      >
         {sorted.map((img) => (
           <ImageLayer
             key={img.id}

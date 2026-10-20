@@ -64,25 +64,25 @@ export function SubscribeWidget() {
         {!open ? (
           <button
             type="button"
-            className="rounded-full bg-black px-5 py-3.5 text-[13px] font-semibold tracking-wide text-white shadow-[0_8px_24px_rgba(0,0,0,0.22)]"
+            className="cursor-pointer rounded-full bg-black px-5 py-3.5 text-[13px] font-semibold tracking-wide text-white shadow-[0_8px_24px_rgba(0,0,0,0.22)]"
             onClick={() => setOpen(true)}
           >
             S&apos;abonner
           </button>
         ) : (
-          <div className="w-[min(291px,calc(100vw-2rem))] rounded-xl border border-black/10 bg-white p-3.5 text-black shadow-[0_12px_40px_rgba(0,0,0,0.16)]">
+          <div className="w-[min(291px,calc(100vw-2rem))] rounded-xl border border-white/12 bg-black p-3.5 text-white shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
             <div className="mb-1.5 flex items-center justify-between gap-2">
               <strong className="text-sm">MIKBOOK</strong>
               <button
                 type="button"
-                className="px-1 text-xl leading-none text-black"
+                className="cursor-pointer px-1 text-xl leading-none text-white"
                 aria-label="Fermer"
                 onClick={() => setOpen(false)}
               >
                 ×
               </button>
             </div>
-            <p className="mb-3 text-xs text-black/55">
+            <p className="mb-3 text-xs text-white/55">
               Abonnement — accès à la plateforme
             </p>
             <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
@@ -90,13 +90,13 @@ export function SubscribeWidget() {
                 <li key={plan.id}>
                   <button
                     type="button"
-                    className="flex w-full items-center justify-between gap-2 rounded-lg border border-black/12 bg-[#f7f4ef] px-2.5 py-2.5 text-left text-[13px] disabled:cursor-wait disabled:opacity-60"
+                    className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/10 px-2.5 py-2.5 text-left text-[13px] text-white disabled:cursor-wait disabled:opacity-60"
                     disabled={loading !== null}
                     onClick={() => startCheckout(plan.id)}
                   >
                     <span>
                       <span className="block font-semibold">{plan.label}</span>
-                      <span className="block text-[11px] text-black/50">{plan.hint}</span>
+                      <span className="block text-[11px] text-white/50">{plan.hint}</span>
                     </span>
                     <span className="whitespace-nowrap font-bold">
                       {loading === plan.id ? "…" : plan.price}
@@ -107,13 +107,13 @@ export function SubscribeWidget() {
             </ul>
             <button
               type="button"
-              className="mt-2.5 w-full bg-transparent py-1.5 text-xs text-black underline underline-offset-2 disabled:opacity-60"
+              className="mt-2.5 w-full cursor-pointer bg-transparent py-1.5 text-xs text-white underline underline-offset-2 disabled:cursor-wait disabled:opacity-60"
               disabled={loading !== null}
               onClick={openPortal}
             >
               {loading === "portal" ? "…" : "Gérer mon abonnement"}
             </button>
-            {error && <p className="mt-2 text-[11px] text-[#b00020]">{error}</p>}
+            {error && <p className="mt-2 text-[11px] text-[#ff6b7a]">{error}</p>}
           </div>
         )}
       </div>

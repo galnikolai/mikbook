@@ -1,5 +1,6 @@
 "use client";
 
+import { CHAPTERS } from "@/lib/landing/chapters";
 import type { ColumnId, ImageItem, LandingLayout } from "@/lib/landing/layout-types";
 import { MagnetColumn } from "./MagnetColumn";
 
@@ -48,15 +49,21 @@ function Col1Text() {
   );
 }
 
-function Col2Intro() {
+function Col2Chapters() {
   return (
-    <div className="landing-col2-intro relative z-[5] px-2 pb-4 pt-1">
-      <p className="text-[11px] leading-snug text-black/70">
-        The Secret Cave
-        <br />
-        Water Pavillion
-      </p>
-    </div>
+    <nav className="landing-chapters relative z-[5]" aria-label="Chapitres">
+      <p className="landing-chapters__label">24 chapitres</p>
+      <ol className="landing-chapters__list">
+        {CHAPTERS.map((ch) => (
+          <li key={ch.code}>
+            <span className="landing-chapters__code">
+              {ch.n}-{ch.code}
+            </span>
+            <span className="landing-chapters__title">{ch.title}</span>
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }
 
@@ -94,8 +101,8 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          header={<Col2Intro />}
-          className="min-w-0 overflow-x-hidden overflow-y-auto border-l border-black/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          header={<Col2Chapters />}
+          className="min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         />
 
         <MagnetColumn
@@ -107,12 +114,12 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          className="min-w-0 overflow-x-hidden overflow-y-auto border-l border-black/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         />
       </div>
 
       <div className="block min-[900px]:hidden">
-        <section className="border-b border-black/10 p-5">
+        <section className="p-5">
           <Col1Text />
         </section>
         <MagnetColumn
@@ -124,8 +131,8 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          header={<Col2Intro />}
-          className="relative border-b border-black/10"
+          header={<Col2Chapters />}
+          className="relative"
         />
         <MagnetColumn
           column={3}
