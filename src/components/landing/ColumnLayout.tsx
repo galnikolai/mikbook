@@ -102,7 +102,7 @@ export function ColumnLayout({
           onChange={onChange}
           onColumnWidth={onColumnWidth}
           header={<Col2Chapters />}
-          className="min-w-0 overflow-x-hidden overflow-y-auto border-l border-black/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         />
 
         <MagnetColumn
@@ -114,12 +114,12 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          className="min-w-0 overflow-x-hidden overflow-y-auto border-l border-black/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         />
       </div>
 
       <div className="block min-[900px]:hidden">
-        <section className="border-b border-black/10 p-5">
+        <section className="p-5">
           <Col1Text />
         </section>
         <MagnetColumn
@@ -132,7 +132,7 @@ export function ColumnLayout({
           onChange={onChange}
           onColumnWidth={onColumnWidth}
           header={<Col2Chapters />}
-          className="relative border-b border-black/10"
+          className="relative"
         />
         <MagnetColumn
           column={3}

@@ -139,7 +139,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
       src={image.src}
       alt=""
       draggable={false}
-      className="block h-auto w-full select-none"
+      className="m-0 block h-auto w-full select-none align-top leading-none"
       onLoad={onImgLoad}
     />
   );
@@ -151,7 +151,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
           href={image.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute block"
+          className="absolute block leading-none"
           style={style}
         >
           {img}
@@ -159,7 +159,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
       );
     }
     return (
-      <div className="absolute" style={style}>
+      <div className="absolute leading-none" style={style}>
         {img}
       </div>
     );
@@ -167,7 +167,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
 
   return (
     <div
-      className={`absolute cursor-move touch-none ${selected ? "ring-2 ring-black ring-offset-2" : "ring-1 ring-black/30"}`}
+      className={`absolute cursor-move touch-none leading-none ${selected ? "ring-2 ring-black ring-offset-2" : "ring-1 ring-black/30"}`}
       style={style}
       onPointerDown={onPointerDownMove}
       onPointerMove={onPointerMove}
