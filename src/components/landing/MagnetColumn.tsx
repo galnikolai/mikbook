@@ -56,7 +56,11 @@ export function MagnetColumn({
 
   return (
     <div className={className}>
-      {header ? <div className="px-3 pt-3 pb-2">{header}</div> : null}
+      {header ? (
+        <div className="min-w-0 max-w-full overflow-x-hidden px-3 pt-3 pb-2">
+          {header}
+        </div>
+      ) : null}
       <div
         ref={stackRef}
         className="relative w-full"
