@@ -43,14 +43,18 @@ export function MagnetColumn({
     return () => ro.disconnect();
   }, [column, onColumnWidth]);
 
-  // content height = last image bottom
-  let stackBottom = STACK_START_Y[column];
+  // Stack Y is local to the image plane (below header), not the whole column.
+  const startY = header ? 0 : STACK_START_Y[column];
+  let stackBottom = startY;
   const colW = ref.current?.clientWidth || 400;
   for (const img of sorted) {
     stackBottom +=
       stackedHeight(img, colW, img.naturalAspect ?? 1.25) + STACK_GAP;
   }
-  const minH = Math.max(contentHeight, Math.round(stackBottom + 80));
+  const minH = Math.max(
+    header ? 0 : contentHeight,
+    Math.round(stackBottom + 80),
+  );
 
   return (
     <div
@@ -58,18 +62,20 @@ export function MagnetColumn({
       className={className}
       data-image-column={column}
     >
-      <div className="relative p-3 pb-12" style={{ minHeight: minH }}>
+      <div className="p-3 pb-12">
         {header}
-        {sorted.map((img) => (
-          <ImageLayer
-            key={img.id}
-            image={img}
-            editMode={editMode}
-            selected={selectedId === img.id}
-            onSelect={onSelect}
-            onChange={onChange}
-          />
-        ))}
+        <div className="relative" style={{ minHeight: minH }}>
+          {sorted.map((img) => (
+            <ImageLayer
+              key={img.id}
+              image={img}
+              editMode={editMode}
+              selected={selectedId === img.id}
+              onSelect={onSelect}
+              onChange={onChange}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
