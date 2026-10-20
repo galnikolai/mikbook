@@ -96,20 +96,6 @@ export function ImageEditorPanel({
         </button>
       </div>
 
-      <ul className="max-h-40 space-y-1 overflow-y-auto border-b border-black/10 pb-3">
-        {layout.images.map((img) => (
-          <li key={img.id}>
-            <button
-              type="button"
-              className={`w-full rounded px-2 py-1 text-left ${selectedId === img.id ? "bg-black text-white" : "hover:bg-black/5"}`}
-              onClick={() => onSelect(img.id)}
-            >
-              col{img.column} · {img.id}
-            </button>
-          </li>
-        ))}
-      </ul>
-
       {selected && (
         <section className="space-y-2">
           <p className="font-medium">Selected: {selected.id}</p>

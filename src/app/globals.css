@@ -126,44 +126,30 @@ html::-webkit-scrollbar {
 .landing-chapters {
   position: relative;
   z-index: 5;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   padding: 0.15rem 0.35rem 1.25rem;
-  max-width: 22rem;
 }
 
-.landing-chapters__label {
-  margin: 0 0 0.55rem;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.45);
-}
-
-.landing-chapters__list {
+.landing-chapters__line {
+  display: block;
   margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.landing-chapters__list li {
-  display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr);
-  column-gap: 0.55rem;
-  align-items: baseline;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
   font-size: 11px;
-  line-height: 1.35;
-}
-
-.landing-chapters__code {
+  line-height: 1.55;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-.landing-chapters__title {
-  color: rgba(0, 0, 0, 0.72);
+.landing-chapters__item {
+  display: inline;
+  white-space: nowrap;
 }
 
 .landing-mobile-block {

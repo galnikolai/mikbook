@@ -52,17 +52,16 @@ function Col1Text() {
 function Col2Chapters() {
   return (
     <nav className="landing-chapters relative z-[5]" aria-label="Chapitres">
-      <p className="landing-chapters__label">24 chapitres</p>
-      <ol className="landing-chapters__list">
-        {CHAPTERS.map((ch) => (
-          <li key={ch.code}>
-            <span className="landing-chapters__code">
+      <p className="landing-chapters__line">
+        {CHAPTERS.map((ch, i) => (
+          <span key={ch.code}>
+            {i > 0 ? " " : null}
+            <span className="landing-chapters__item">
               {ch.n}-{ch.code}
             </span>
-            <span className="landing-chapters__title">{ch.title}</span>
-          </li>
+          </span>
         ))}
-      </ol>
+      </p>
     </nav>
   );
 }
