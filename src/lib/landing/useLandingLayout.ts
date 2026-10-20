@@ -6,6 +6,7 @@ import { STORAGE_KEY } from "./layout-types";
 import {
   clampImageInColumn,
   ensureColumnOrders,
+  moveOrder,
   reflowColumn,
   sortByOrder,
 } from "./stack";
@@ -122,6 +123,17 @@ export function useLandingLayout() {
   const updateImage = useCallback(
     (id: string, patch: Partial<ImageItem>) => {
       updateLayout((prev) => {
+        if (patch.order !== undefined) {
+          const target = prev.images.find((i) => i.id === id);
+          if (!target) return prev;
+          const colCount = prev.images.filter((i) => i.column === target.column).length;
+          const maxIdx = Math.max(0, Math.min(49, colCount - 1));
+          const next = Math.max(0, Math.min(maxIdx, Math.floor(patch.order)));
+          let images = moveOrder(prev.images, id, next);
+          images = reflow(images, target.column);
+          return { ...prev, images };
+        }
+
         let images = prev.images.map((img) => {
           if (img.id !== id) return img;
           const merged = { ...img, ...patch };
