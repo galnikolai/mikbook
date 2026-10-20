@@ -42,7 +42,7 @@ export function clampImageInColumn<T extends Pick<ImageItem, "x" | "width" | "sc
 }
 
 export const STACK_START_Y: Record<ColumnId, number> = {
-  2: 72,
+  2: 24,
   3: 24,
 };
 
