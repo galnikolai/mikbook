@@ -19,8 +19,6 @@ export function LandingShell() {
     addImage,
     removeImage,
     save,
-    reset,
-    exportJson,
     setColumnWidth,
   } = useLandingLayout();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -56,14 +54,12 @@ export function LandingShell() {
           }}
           onRemove={removeImage}
           onSave={save}
-          onReset={reset}
-          onExport={exportJson}
           onWidthsChange={(columnWidths) =>
             updateLayout((prev) => ({ ...prev, columnWidths }))
           }
         />
       )}
-      <SubscribeWidget />
+      {!editMode && <SubscribeWidget />}
     </>
   );
 }
