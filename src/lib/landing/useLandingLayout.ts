@@ -265,6 +265,37 @@ export function useLandingLayout() {
     URL.revokeObjectURL(url);
   }, [layout]);
 
+  /** Relative order nudge from current state (safe for rapid key repeats). */
+  const nudgeOrder = useCallback(
+    (id: string, delta: number) => {
+      updateLayout((prev) => {
+        const target = prev.images.find((i) => i.id === id);
+        if (!target) return prev;
+        const colCount = prev.images.filter((i) => i.column === target.column).length;
+        const maxIdx = Math.max(0, Math.min(49, colCount - 1));
+        const next = Math.max(0, Math.min(maxIdx, (target.order ?? 0) + delta));
+        if (next === (target.order ?? 0)) return prev;
+        let images = moveOrder(prev.images, id, next);
+        images = reflow(images, target.column);
+        return { ...prev, images };
+      });
+    },
+    [updateLayout, reflow],
+  );
+
+  const nudgeX = useCallback(
+    (id: string, delta: number) => {
+      updateLayout((prev) => {
+        const images = prev.images.map((img) => {
+          if (img.id !== id) return img;
+          return clampImageInColumn({ ...img, x: img.x + delta }, "x");
+        });
+        return { ...prev, images };
+      });
+    },
+    [updateLayout],
+  );
+
   return {
     layout,
     ready,
@@ -277,5 +308,7 @@ export function useLandingLayout() {
     reset,
     exportJson,
     setColumnWidth,
+    nudgeOrder,
+    nudgeX,
   };
 }

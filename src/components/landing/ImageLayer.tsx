@@ -151,6 +151,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
           href={image.href}
           target="_blank"
           rel="noopener noreferrer"
+          data-image-id={image.id}
           className="absolute block leading-none"
           style={style}
         >
@@ -159,7 +160,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
       );
     }
     return (
-      <div className="absolute leading-none" style={style}>
+      <div data-image-id={image.id} className="absolute leading-none" style={style}>
         {img}
       </div>
     );
@@ -167,7 +168,9 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
 
   return (
     <div
-      className={`absolute cursor-move touch-none leading-none ${selected ? "ring-2 ring-black ring-offset-2" : "ring-1 ring-black/30"}`}
+      data-image-id={image.id}
+      tabIndex={selected ? 0 : -1}
+      className={`absolute cursor-move touch-none leading-none outline-none ${selected ? "ring-2 ring-black ring-offset-2" : "ring-1 ring-black/30"}`}
       style={style}
       onPointerDown={onPointerDownMove}
       onPointerMove={onPointerMove}

@@ -1,15 +1,72 @@
 "use client";
 
+import { useEffect, useState, type KeyboardEvent, type ClipboardEvent } from "react";
 import type { ImageItem, LandingLayout } from "@/lib/landing/layout-types";
 
 const COL_WIDTH_MIN = 15;
 const COL_WIDTH_MAX = 45;
 
-function clampColumnWidth(raw: string): string {
+type ColKey = keyof LandingLayout["columnWidths"];
+
+function widthToDisplay(raw: string): string {
   const n = parseFloat(raw.replace(",", "."));
-  if (!Number.isFinite(n)) return `${COL_WIDTH_MIN}%`;
+  return Number.isFinite(n) ? String(n) : "";
+}
+
+function clampColumnWidthValue(n: number): string {
   const clamped = Math.min(COL_WIDTH_MAX, Math.max(COL_WIDTH_MIN, n));
   return `${Math.round(clamped * 10) / 10}%`;
+}
+
+const NAV_KEYS = new Set([
+  "Backspace",
+  "Delete",
+  "Tab",
+  "Escape",
+  "Enter",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown",
+  "Home",
+  "End",
+]);
+
+/** Block letters and other non-numeric keys; optionally allow one decimal separator. */
+function onDigitsKeyDown(
+  e: KeyboardEvent<HTMLInputElement>,
+  opts: { decimal?: boolean } = {},
+) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (NAV_KEYS.has(e.key)) return;
+  if (/^\d$/.test(e.key)) return;
+  if (
+    opts.decimal &&
+    (e.key === "." || e.key === ",") &&
+    !e.currentTarget.value.includes(".") &&
+    !e.currentTarget.value.includes(",")
+  ) {
+    return;
+  }
+  e.preventDefault();
+}
+
+function onDigitsPaste(
+  e: ClipboardEvent<HTMLInputElement>,
+  opts: { decimal?: boolean } = {},
+) {
+  const text = e.clipboardData.getData("text");
+  const ok = opts.decimal ? /^-?\d*[.,]?\d*$/.test(text) && text !== "" && text !== "-" : /^\d+$/.test(text);
+  if (!ok) e.preventDefault();
+}
+
+function parseDigits(raw: string, allowDecimal = false): number | null {
+  const cleaned = allowDecimal
+    ? raw.replace(",", ".").replace(/[^\d.-]/g, "")
+    : raw.replace(/\D/g, "");
+  if (cleaned === "" || cleaned === "-" || cleaned === ".") return null;
+  const n = allowDecimal ? Number(cleaned) : Number.parseInt(cleaned, 10);
+  return Number.isFinite(n) ? n : null;
 }
 
 type Props = {
@@ -42,6 +99,36 @@ export function ImageEditorPanel({
   const maxOrder = Math.min(50, Math.max(1, colCount));
   const displayOrder = selected ? (selected.order ?? 0) + 1 : 1;
 
+  const [widthDrafts, setWidthDrafts] = useState<Record<ColKey, string>>({
+    col1: widthToDisplay(layout.columnWidths.col1),
+    col2: widthToDisplay(layout.columnWidths.col2),
+    col3: widthToDisplay(layout.columnWidths.col3),
+  });
+  const [widthFocused, setWidthFocused] = useState<ColKey | null>(null);
+
+  useEffect(() => {
+    setWidthDrafts((prev) => {
+      const next = { ...prev };
+      for (const key of ["col1", "col2", "col3"] as const) {
+        if (widthFocused === key) continue;
+        next[key] = widthToDisplay(layout.columnWidths[key]);
+      }
+      return next;
+    });
+  }, [layout.columnWidths, widthFocused]);
+
+  function commitColumnWidth(key: ColKey, raw: string) {
+    const n = parseDigits(raw);
+    const clamped = clampColumnWidthValue(
+      n === null ? COL_WIDTH_MIN : n,
+    );
+    onWidthsChange({ ...layout.columnWidths, [key]: clamped });
+    setWidthDrafts((prev) => ({
+      ...prev,
+      [key]: widthToDisplay(clamped),
+    }));
+  }
+
   return (
     <aside className="fixed top-3 right-3 z-[100] flex max-h-[calc(100dvh-1.5rem)] w-72 flex-col gap-3 overflow-y-auto rounded-lg border border-black/15 bg-white/95 p-3 text-xs text-black shadow-lg backdrop-blur">
       <div className="flex items-center justify-between gap-2">
@@ -55,18 +142,27 @@ export function ImageEditorPanel({
           <label key={key} className="flex items-center justify-between gap-2">
             <span>{key}</span>
             <input
-              type="number"
-              min={COL_WIDTH_MIN}
-              max={COL_WIDTH_MAX}
-              step={1}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="w-24 rounded border border-black/20 px-1.5 py-1"
-              value={parseFloat(layout.columnWidths[key]) || ""}
-              onChange={(e) =>
-                onWidthsChange({
-                  ...layout.columnWidths,
-                  [key]: clampColumnWidth(e.target.value),
-                })
-              }
+              value={widthDrafts[key]}
+              onKeyDown={(e) => {
+                onDigitsKeyDown(e);
+                if (e.key === "Enter") {
+                  e.currentTarget.blur();
+                }
+              }}
+              onPaste={(e) => onDigitsPaste(e)}
+              onFocus={() => setWidthFocused(key)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "");
+                setWidthDrafts((prev) => ({ ...prev, [key]: raw }));
+              }}
+              onBlur={(e) => {
+                setWidthFocused(null);
+                commitColumnWidth(key, e.target.value);
+              }}
             />
           </label>
         ))}
@@ -157,14 +253,30 @@ export function ImageEditorPanel({
                 ▲
               </button>
               <input
-                type="number"
-                min={1}
-                max={maxOrder}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 className="w-14 rounded border border-black/20 px-1.5 py-1 text-center"
                 value={displayOrder}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    onChange(selected.id, {
+                      order: Math.max(0, (selected.order ?? 0) - 1),
+                    });
+                    return;
+                  }
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    onChange(selected.id, { order: (selected.order ?? 0) + 1 });
+                    return;
+                  }
+                  onDigitsKeyDown(e);
+                }}
+                onPaste={(e) => onDigitsPaste(e)}
                 onChange={(e) => {
-                  const n = Number(e.target.value);
-                  if (!Number.isFinite(n)) return;
+                  const n = parseDigits(e.target.value);
+                  if (n === null) return;
                   onChange(selected.id, { order: Math.floor(n) - 1 });
                 }}
               />
@@ -183,30 +295,35 @@ export function ImageEditorPanel({
           </div>
 
           <label className="flex items-center justify-between gap-2">
-            <span>X %</span>
+            <span>offset</span>
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               className="w-20 rounded border border-black/20 px-1.5 py-1"
               value={selected.x}
-              onChange={(e) => onChange(selected.id, { x: Number(e.target.value) })}
-            />
-          </label>
-          <label className="flex items-center justify-between gap-2">
-            <span>Y px</span>
-            <input
-              type="number"
-              className="w-20 rounded border border-black/20 px-1.5 py-1"
-              value={selected.y}
-              onChange={(e) => onChange(selected.id, { y: Number(e.target.value) })}
+              onKeyDown={(e) => onDigitsKeyDown(e, { decimal: true })}
+              onPaste={(e) => onDigitsPaste(e, { decimal: true })}
+              onChange={(e) => {
+                const n = parseDigits(e.target.value, true);
+                if (n === null) return;
+                onChange(selected.id, { x: n });
+              }}
             />
           </label>
           <label className="flex items-center justify-between gap-2">
             <span>Width %</span>
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               className="w-20 rounded border border-black/20 px-1.5 py-1"
               value={selected.width}
-              onChange={(e) => onChange(selected.id, { width: Number(e.target.value) })}
+              onKeyDown={(e) => onDigitsKeyDown(e, { decimal: true })}
+              onPaste={(e) => onDigitsPaste(e, { decimal: true })}
+              onChange={(e) => {
+                const n = parseDigits(e.target.value, true);
+                if (n === null) return;
+                onChange(selected.id, { width: n });
+              }}
             />
           </label>
         </section>
