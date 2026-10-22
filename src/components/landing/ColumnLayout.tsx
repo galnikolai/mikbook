@@ -19,7 +19,7 @@ function Col1Text() {
       <h1 className="landing-brand">MIKBOOK</h1>
       <p>
         Devenir un interne sous-alimenté puis un médecin assigné en justice n&apos;est
-        pas facile ; il faut d&apos;abord une dure préparation.
+        pas facile&nbsp;; il faut d&apos;abord une dure préparation.
       </p>
       <p>
         Synthèse méthodique du programme des EDN, le MIKBOOK propose aux étudiants un

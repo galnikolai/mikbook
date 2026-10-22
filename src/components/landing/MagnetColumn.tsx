@@ -30,8 +30,10 @@ export function MagnetColumn({
   header,
   className = "",
 }: Props) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const sorted = sortByOrder(images.filter((i) => i.column === column));
+  const selectedInCol = sorted.find((i) => i.id === selectedId);
 
   useEffect(() => {
     const el = stackRef.current;
@@ -42,6 +44,19 @@ export function MagnetColumn({
     ro.observe(el);
     return () => ro.disconnect();
   }, [column, onColumnWidth]);
+
+  useEffect(() => {
+    if (!editMode || !selectedInCol) return;
+    const node = rootRef.current?.querySelector(
+      `[data-image-id="${selectedInCol.id}"]`,
+    ) as HTMLElement | null;
+    if (!node) return;
+    // After reflow, next frame so layout y is applied
+    const id = requestAnimationFrame(() => {
+      node.scrollIntoView({ block: "nearest", behavior: "smooth", inline: "nearest" });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [editMode, selectedInCol?.id, selectedInCol?.y, selectedInCol?.order, selectedInCol?.x]);
 
   let stackBottom = 0;
   const colW = stackRef.current?.clientWidth || 400;
@@ -55,7 +70,7 @@ export function MagnetColumn({
   );
 
   return (
-    <div className={className}>
+    <div ref={rootRef} className={className}>
       {header ? (
         <div className="min-w-0 max-w-full overflow-x-hidden px-3 pt-3 pb-2">
           {header}
