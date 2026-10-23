@@ -74,7 +74,14 @@ export function ColumnLayout({
   onChange,
   onColumnWidth,
 }: Props) {
-  const { col1, col2: w2, col3: w3 } = layout.columnWidths;
+  const col1 = parseFloat(layout.columnWidths.col1) || 22;
+  const col2 = parseFloat(layout.columnWidths.col2) || 39;
+  const col3 = parseFloat(layout.columnWidths.col3) || 39;
+  const sum = col1 + col2 + col3 || 1;
+  // Always paint as fractions of 100% so the grid never overflows/clips.
+  const g1 = `${(col1 / sum) * 100}%`;
+  const g2 = `${(col2 / sum) * 100}%`;
+  const g3 = `${(col3 / sum) * 100}%`;
 
   return (
     <div
@@ -85,9 +92,9 @@ export function ColumnLayout({
     >
       <div
         className="hidden h-dvh overflow-hidden min-[900px]:grid"
-        style={{ gridTemplateColumns: `${col1} ${w2} ${w3}` }}
+        style={{ gridTemplateColumns: `${g1} ${g2} ${g3}` }}
       >
-        <aside className="min-w-0 overflow-hidden p-5">
+        <aside className="min-w-0 overflow-x-hidden overflow-y-auto p-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Col1Text />
         </aside>
 
