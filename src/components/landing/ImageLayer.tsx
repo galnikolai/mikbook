@@ -18,6 +18,7 @@ type Props = {
 };
 
 export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Props) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{
     mode: "move" | "scale";
     startX: number;
@@ -112,12 +113,10 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
     }
   }, []);
 
+  // Flow layout: no absolute top — browser stacks flush; x via margin.
   const style: CSSProperties = {
-    left: `${image.x}%`,
-    top: image.y,
-    width: `${image.width}%`,
-    transform: `scale(${image.scale})`,
-    transformOrigin: "top left",
+    width: `${image.width * image.scale}%`,
+    marginLeft: `${image.x}%`,
     zIndex: image.zIndex,
   };
 
@@ -152,7 +151,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
           target="_blank"
           rel="noopener noreferrer"
           data-image-id={image.id}
-          className="absolute block leading-none"
+          className="relative block leading-none"
           style={style}
         >
           {img}
@@ -160,7 +159,7 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
       );
     }
     return (
-      <div data-image-id={image.id} className="absolute leading-none" style={style}>
+      <div data-image-id={image.id} className="relative block leading-none" style={style}>
         {img}
       </div>
     );
@@ -168,9 +167,10 @@ export function ImageLayer({ image, editMode, selected, onSelect, onChange }: Pr
 
   return (
     <div
+      ref={rootRef}
       data-image-id={image.id}
       tabIndex={selected ? 0 : -1}
-      className={`absolute cursor-move touch-none leading-none outline-none ${selected ? "ring-2 ring-black ring-offset-2" : "ring-1 ring-black/30"}`}
+      className={`relative block cursor-move touch-none leading-none outline-none ${selected ? "outline outline-2 outline-black -outline-offset-2" : ""}`}
       style={style}
       onPointerDown={onPointerDownMove}
       onPointerMove={onPointerMove}

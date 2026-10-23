@@ -13,9 +13,50 @@ function widthToDisplay(raw: string): string {
   return Number.isFinite(n) ? String(n) : "";
 }
 
-function clampColumnWidthValue(n: number): string {
-  const clamped = Math.min(COL_WIDTH_MAX, Math.max(COL_WIDTH_MIN, n));
-  return `${Math.round(clamped * 10) / 10}%`;
+function formatWidth(n: number): string {
+  return `${Math.round(n * 10) / 10}%`;
+}
+
+/** Keep three columns summing to 100%, each within 15–45. */
+function distributeWidths(
+  current: LandingLayout["columnWidths"],
+  key: ColKey,
+  rawValue: number,
+): LandingLayout["columnWidths"] {
+  const others = (["col1", "col2", "col3"] as const).filter((k) => k !== key);
+  const maxForKey = Math.min(COL_WIDTH_MAX, 100 - COL_WIDTH_MIN * 2);
+  const v = Math.min(maxForKey, Math.max(COL_WIDTH_MIN, rawValue));
+  const rest = 100 - v;
+
+  const o0 = parseFloat(current[others[0]]) || rest / 2;
+  const o1 = parseFloat(current[others[1]]) || rest / 2;
+  const sum = o0 + o1 || 1;
+  let n0 = (o0 / sum) * rest;
+  let n1 = (o1 / sum) * rest;
+
+  if (n0 < COL_WIDTH_MIN) {
+    n0 = COL_WIDTH_MIN;
+    n1 = rest - COL_WIDTH_MIN;
+  }
+  if (n1 < COL_WIDTH_MIN) {
+    n1 = COL_WIDTH_MIN;
+    n0 = rest - COL_WIDTH_MIN;
+  }
+  if (n0 > COL_WIDTH_MAX) {
+    n0 = COL_WIDTH_MAX;
+    n1 = rest - COL_WIDTH_MAX;
+  }
+  if (n1 > COL_WIDTH_MAX) {
+    n1 = COL_WIDTH_MAX;
+    n0 = rest - COL_WIDTH_MAX;
+  }
+
+  return {
+    ...current,
+    [key]: formatWidth(v),
+    [others[0]]: formatWidth(n0),
+    [others[1]]: formatWidth(n1),
+  };
 }
 
 const NAV_KEYS = new Set([
@@ -119,14 +160,27 @@ export function ImageEditorPanel({
 
   function commitColumnWidth(key: ColKey, raw: string) {
     const n = parseDigits(raw);
-    const clamped = clampColumnWidthValue(
+    const next = distributeWidths(
+      layout.columnWidths,
+      key,
       n === null ? COL_WIDTH_MIN : n,
     );
-    onWidthsChange({ ...layout.columnWidths, [key]: clamped });
-    setWidthDrafts((prev) => ({
-      ...prev,
-      [key]: widthToDisplay(clamped),
-    }));
+    onWidthsChange(next);
+    setWidthDrafts({
+      col1: widthToDisplay(next.col1),
+      col2: widthToDisplay(next.col2),
+      col3: widthToDisplay(next.col3),
+    });
+  }
+
+  function stepNumeric(
+    id: string,
+    field: "x" | "width",
+    delta: number,
+  ) {
+    const img = layout.images.find((i) => i.id === id);
+    if (!img) return;
+    onChange(id, { [field]: Math.round((img[field] + delta) * 10) / 10 });
   }
 
   return (
@@ -137,7 +191,7 @@ export function ImageEditorPanel({
       </div>
 
       <section className="space-y-1.5 border-b border-black/10 pb-3">
-        <p className="font-medium">Column widths</p>
+        <p>Column widths</p>
         {(["col1", "col2", "col3"] as const).map((key) => (
           <label key={key} className="flex items-center justify-between gap-2">
             <span>{key}</span>
@@ -187,7 +241,7 @@ export function ImageEditorPanel({
 
       {selected && (
         <section className="space-y-2">
-          <p className="font-medium">Selected: {selected.id}</p>
+          <p>Selected: {selected.id}</p>
 
           <div className="flex gap-1.5">
             <label className="block min-w-0 flex-1">
@@ -294,38 +348,99 @@ export function ImageEditorPanel({
             </div>
           </div>
 
-          <label className="flex items-center justify-between gap-2">
-            <span>offset</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              className="w-20 rounded border border-black/20 px-1.5 py-1"
-              value={selected.x}
-              onKeyDown={(e) => onDigitsKeyDown(e, { decimal: true })}
-              onPaste={(e) => onDigitsPaste(e, { decimal: true })}
-              onChange={(e) => {
-                const n = parseDigits(e.target.value, true);
-                if (n === null) return;
-                onChange(selected.id, { x: n });
-              }}
-            />
-          </label>
-          <label className="flex items-center justify-between gap-2">
-            <span>Width %</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              className="w-20 rounded border border-black/20 px-1.5 py-1"
-              value={selected.width}
-              onKeyDown={(e) => onDigitsKeyDown(e, { decimal: true })}
-              onPaste={(e) => onDigitsPaste(e, { decimal: true })}
-              onChange={(e) => {
-                const n = parseDigits(e.target.value, true);
-                if (n === null) return;
-                onChange(selected.id, { width: n });
-              }}
-            />
-          </label>
+          <div className="flex items-center justify-between gap-2">
+            <span>Offset</span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Offset left"
+                className="rounded border border-black/20 px-1.5 py-1 leading-none"
+                onClick={() => stepNumeric(selected.id, "x", -1)}
+              >
+                ◀
+              </button>
+              <input
+                type="text"
+                inputMode="decimal"
+                className="w-14 rounded border border-black/20 px-1.5 py-1 text-center"
+                value={selected.x}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowLeft") {
+                    e.preventDefault();
+                    stepNumeric(selected.id, "x", -1);
+                    return;
+                  }
+                  if (e.key === "ArrowRight") {
+                    e.preventDefault();
+                    stepNumeric(selected.id, "x", 1);
+                    return;
+                  }
+                  onDigitsKeyDown(e, { decimal: true });
+                }}
+                onPaste={(e) => onDigitsPaste(e, { decimal: true })}
+                onChange={(e) => {
+                  const n = parseDigits(e.target.value, true);
+                  if (n === null) return;
+                  onChange(selected.id, { x: n });
+                }}
+              />
+              <button
+                type="button"
+                aria-label="Offset right"
+                className="rounded border border-black/20 px-1.5 py-1 leading-none"
+                onClick={() => stepNumeric(selected.id, "x", 1)}
+              >
+                ▶
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            <span>Width</span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Width down"
+                className="rounded border border-black/20 px-1.5 py-1 leading-none"
+                onClick={() => stepNumeric(selected.id, "width", -1)}
+              >
+                ▼
+              </button>
+              <input
+                type="text"
+                inputMode="decimal"
+                className="w-14 rounded border border-black/20 px-1.5 py-1 text-center"
+                value={selected.width}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    stepNumeric(selected.id, "width", 1);
+                    return;
+                  }
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    stepNumeric(selected.id, "width", -1);
+                    return;
+                  }
+                  onDigitsKeyDown(e, { decimal: true });
+                }}
+                onPaste={(e) => onDigitsPaste(e, { decimal: true })}
+                onChange={(e) => {
+                  const n = parseDigits(e.target.value, true);
+                  if (n === null) return;
+                  onChange(selected.id, { width: n });
+                }}
+              />
+              <button
+                type="button"
+                aria-label="Width up"
+                className="rounded border border-black/20 px-1.5 py-1 leading-none"
+                onClick={() => stepNumeric(selected.id, "width", 1)}
+              >
+                ▲
+              </button>
+            </div>
+          </div>
         </section>
       )}
 

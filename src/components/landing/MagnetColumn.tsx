@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import type { ColumnId, ImageItem } from "@/lib/landing/layout-types";
-import { sortByOrder, stackedHeight, STACK_GAP } from "@/lib/landing/stack";
+import { sortByOrder } from "@/lib/landing/stack";
 import { ImageLayer } from "./ImageLayer";
 
 type Props = {
@@ -51,23 +51,18 @@ export function MagnetColumn({
       `[data-image-id="${selectedInCol.id}"]`,
     ) as HTMLElement | null;
     if (!node) return;
-    // After reflow, next frame so layout y is applied
     const id = requestAnimationFrame(() => {
       node.scrollIntoView({ block: "nearest", behavior: "smooth", inline: "nearest" });
     });
     return () => cancelAnimationFrame(id);
-  }, [editMode, selectedInCol?.id, selectedInCol?.y, selectedInCol?.order, selectedInCol?.x]);
-
-  let stackBottom = 0;
-  const colW = stackRef.current?.clientWidth || 400;
-  for (const img of sorted) {
-    stackBottom +=
-      stackedHeight(img, colW, img.naturalAspect ?? 1.25) + STACK_GAP;
-  }
-  const minH = Math.max(
-    header ? 0 : contentHeight,
-    Math.round(stackBottom + 80),
-  );
+  }, [
+    editMode,
+    selectedInCol?.id,
+    selectedInCol?.order,
+    selectedInCol?.x,
+    selectedInCol?.width,
+    selectedInCol?.scale,
+  ]);
 
   return (
     <div ref={rootRef} className={className}>
@@ -78,9 +73,9 @@ export function MagnetColumn({
       ) : null}
       <div
         ref={stackRef}
-        className="relative w-full"
+        className="relative flex w-full flex-col"
         data-image-column={column}
-        style={{ minHeight: minH }}
+        style={{ minHeight: header ? undefined : contentHeight }}
       >
         {sorted.map((img) => (
           <ImageLayer

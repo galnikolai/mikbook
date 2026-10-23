@@ -101,7 +101,7 @@ export function reflowColumn(
   const packed = col.map((img, index) => {
     const aspect = aspects[img.id] ?? img.naturalAspect ?? 1.25;
     const clamped = clampImageInColumn(img);
-    const next = { ...clamped, order: index, y: Math.floor(y) };
+    const next = { ...clamped, order: index, y: Math.round(y) };
     y += stackedHeight(clamped, columnWidthPx, aspect) + gap;
     return next;
   });
