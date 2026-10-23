@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import type { ColumnId, ImageItem } from "@/lib/landing/layout-types";
-import { sortByOrder, stackedHeight, STACK_GAP, STACK_START_Y } from "@/lib/landing/stack";
+import { sortByOrder } from "@/lib/landing/stack";
 import { ImageLayer } from "./ImageLayer";
 
 type Props = {
@@ -30,11 +30,13 @@ export function MagnetColumn({
   header,
   className = "",
 }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
   const sorted = sortByOrder(images.filter((i) => i.column === column));
+  const selectedInCol = sorted.find((i) => i.id === selectedId);
 
   useEffect(() => {
-    const el = ref.current;
+    const el = stackRef.current;
     if (!el) return;
     const report = () => onColumnWidth(column, el.clientWidth);
     report();
@@ -43,23 +45,38 @@ export function MagnetColumn({
     return () => ro.disconnect();
   }, [column, onColumnWidth]);
 
-  // content height = last image bottom
-  let stackBottom = STACK_START_Y[column];
-  const colW = ref.current?.clientWidth || 400;
-  for (const img of sorted) {
-    stackBottom +=
-      stackedHeight(img, colW, img.naturalAspect ?? 1.25) + STACK_GAP;
-  }
-  const minH = Math.max(contentHeight, Math.round(stackBottom + 80));
+  useEffect(() => {
+    if (!editMode || !selectedInCol) return;
+    const node = rootRef.current?.querySelector(
+      `[data-image-id="${selectedInCol.id}"]`,
+    ) as HTMLElement | null;
+    if (!node) return;
+    const id = requestAnimationFrame(() => {
+      node.scrollIntoView({ block: "nearest", behavior: "smooth", inline: "nearest" });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [
+    editMode,
+    selectedInCol?.id,
+    selectedInCol?.order,
+    selectedInCol?.x,
+    selectedInCol?.width,
+    selectedInCol?.scale,
+  ]);
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      data-image-column={column}
-    >
-      <div className="relative p-3 pb-12" style={{ minHeight: minH }}>
-        {header}
+    <div ref={rootRef} className={className}>
+      {header ? (
+        <div className="min-w-0 max-w-full overflow-x-hidden px-3 pt-3 pb-2">
+          {header}
+        </div>
+      ) : null}
+      <div
+        ref={stackRef}
+        className="relative flex w-full flex-col"
+        data-image-column={column}
+        style={{ minHeight: header ? undefined : contentHeight }}
+      >
         {sorted.map((img) => (
           <ImageLayer
             key={img.id}

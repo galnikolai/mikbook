@@ -1,5 +1,6 @@
 "use client";
 
+import { CHAPTERS } from "@/lib/landing/chapters";
 import type { ColumnId, ImageItem, LandingLayout } from "@/lib/landing/layout-types";
 import { MagnetColumn } from "./MagnetColumn";
 
@@ -18,7 +19,7 @@ function Col1Text() {
       <h1 className="landing-brand">MIKBOOK</h1>
       <p>
         Devenir un interne sous-alimenté puis un médecin assigné en justice n&apos;est
-        pas facile ; il faut d&apos;abord une dure préparation.
+        pas facile&nbsp;; il faut d&apos;abord une dure préparation.
       </p>
       <p>
         Synthèse méthodique du programme des EDN, le MIKBOOK propose aux étudiants un
@@ -48,15 +49,20 @@ function Col1Text() {
   );
 }
 
-function Col2Intro() {
+function Col2Chapters() {
   return (
-    <div className="landing-col2-intro relative z-[5] px-2 pb-4 pt-1">
-      <p className="text-[11px] leading-snug text-black/70">
-        The Secret Cave
-        <br />
-        Water Pavillion
+    <nav className="landing-chapters relative z-[5]" aria-label="Chapitres">
+      <p className="landing-chapters__line">
+        {CHAPTERS.map((ch, i) => (
+          <span key={ch.code}>
+            {i > 0 ? " " : null}
+            <span className="landing-chapters__item">
+              {ch.n}-{ch.code}
+            </span>
+          </span>
+        ))}
       </p>
-    </div>
+    </nav>
   );
 }
 
@@ -68,7 +74,14 @@ export function ColumnLayout({
   onChange,
   onColumnWidth,
 }: Props) {
-  const { col1, col2: w2, col3: w3 } = layout.columnWidths;
+  const col1 = parseFloat(layout.columnWidths.col1) || 22;
+  const col2 = parseFloat(layout.columnWidths.col2) || 39;
+  const col3 = parseFloat(layout.columnWidths.col3) || 39;
+  const sum = col1 + col2 + col3 || 1;
+  // Always paint as fractions of 100% so the grid never overflows/clips.
+  const g1 = `${(col1 / sum) * 100}%`;
+  const g2 = `${(col2 / sum) * 100}%`;
+  const g3 = `${(col3 / sum) * 100}%`;
 
   return (
     <div
@@ -79,9 +92,9 @@ export function ColumnLayout({
     >
       <div
         className="hidden h-dvh overflow-hidden min-[900px]:grid"
-        style={{ gridTemplateColumns: `${col1} ${w2} ${w3}` }}
+        style={{ gridTemplateColumns: `${g1} ${g2} ${g3}` }}
       >
-        <aside className="min-w-0 overflow-hidden p-5">
+        <aside className="min-w-0 overflow-x-hidden overflow-y-auto p-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Col1Text />
         </aside>
 
@@ -94,8 +107,8 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          header={<Col2Intro />}
-          className="min-w-0 overflow-x-hidden overflow-y-auto border-l border-black/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          header={<Col2Chapters />}
+          className="min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         />
 
         <MagnetColumn
@@ -107,12 +120,12 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          className="min-w-0 overflow-x-hidden overflow-y-auto border-l border-black/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         />
       </div>
 
       <div className="block min-[900px]:hidden">
-        <section className="border-b border-black/10 p-5">
+        <section className="p-5">
           <Col1Text />
         </section>
         <MagnetColumn
@@ -124,8 +137,8 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          header={<Col2Intro />}
-          className="relative border-b border-black/10"
+          header={<Col2Chapters />}
+          className="relative"
         />
         <MagnetColumn
           column={3}

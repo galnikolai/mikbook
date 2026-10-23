@@ -65,7 +65,6 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* legacy Edge */
 }
@@ -93,7 +92,9 @@ html::-webkit-scrollbar {
 .landing-col1-inner {
   font-size: 13px;
   line-height: 1.45;
-  max-width: 16rem;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .landing-brand {
@@ -124,15 +125,37 @@ html::-webkit-scrollbar {
   text-underline-offset: 2px;
 }
 
-.landing-col2-intro {
+.landing-chapters {
   position: relative;
   z-index: 5;
-  padding: 0.25rem 0.5rem 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0.15rem 0.35rem 1.25rem;
+}
+
+.landing-chapters__line {
+  display: block;
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  font-size: 11px;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.landing-chapters__item {
+  display: inline;
+  white-space: nowrap;
 }
 
 .landing-mobile-block {
   padding: 1.25rem 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .subscribe-page {

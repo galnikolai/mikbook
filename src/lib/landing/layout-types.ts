@@ -35,7 +35,7 @@ export type LandingLayout = {
 };
 
 /** bump when layout semantics change (magnet stack) */
-export const STORAGE_KEY = "mikbook-landing-layout-v2";
+export const STORAGE_KEY = "mikbook-landing-layout-v4";
 
 export const DEFAULT_WIDTHS: ColumnWidths = {
   col1: "22%",
