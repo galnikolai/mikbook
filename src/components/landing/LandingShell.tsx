@@ -96,8 +96,8 @@ export function LandingShell() {
           }}
           onRemove={removeImage}
           onSave={save}
-          onWidthsChange={(columnWidths) =>
-            updateLayout((prev) => ({ ...prev, columnWidths }))
+          onSplitsChange={(columnSplits) =>
+            updateLayout((prev) => ({ ...prev, columnSplits }))
           }
         />
       )}

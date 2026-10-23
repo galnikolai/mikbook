@@ -1,63 +1,9 @@
 "use client";
 
-import { useEffect, useState, type KeyboardEvent, type ClipboardEvent } from "react";
+import type { KeyboardEvent, ClipboardEvent } from "react";
+import type { ColumnSplits } from "@/lib/landing/column-splits";
 import type { ImageItem, LandingLayout } from "@/lib/landing/layout-types";
-
-const COL_WIDTH_MIN = 15;
-const COL_WIDTH_MAX = 45;
-
-type ColKey = keyof LandingLayout["columnWidths"];
-
-function widthToDisplay(raw: string): string {
-  const n = parseFloat(raw.replace(",", "."));
-  return Number.isFinite(n) ? String(n) : "";
-}
-
-function formatWidth(n: number): string {
-  return `${Math.round(n * 10) / 10}%`;
-}
-
-/** Keep three columns summing to 100%, each within 15–45. */
-function distributeWidths(
-  current: LandingLayout["columnWidths"],
-  key: ColKey,
-  rawValue: number,
-): LandingLayout["columnWidths"] {
-  const others = (["col1", "col2", "col3"] as const).filter((k) => k !== key);
-  const maxForKey = Math.min(COL_WIDTH_MAX, 100 - COL_WIDTH_MIN * 2);
-  const v = Math.min(maxForKey, Math.max(COL_WIDTH_MIN, rawValue));
-  const rest = 100 - v;
-
-  const o0 = parseFloat(current[others[0]]) || rest / 2;
-  const o1 = parseFloat(current[others[1]]) || rest / 2;
-  const sum = o0 + o1 || 1;
-  let n0 = (o0 / sum) * rest;
-  let n1 = (o1 / sum) * rest;
-
-  if (n0 < COL_WIDTH_MIN) {
-    n0 = COL_WIDTH_MIN;
-    n1 = rest - COL_WIDTH_MIN;
-  }
-  if (n1 < COL_WIDTH_MIN) {
-    n1 = COL_WIDTH_MIN;
-    n0 = rest - COL_WIDTH_MIN;
-  }
-  if (n0 > COL_WIDTH_MAX) {
-    n0 = COL_WIDTH_MAX;
-    n1 = rest - COL_WIDTH_MAX;
-  }
-  if (n1 > COL_WIDTH_MAX) {
-    n1 = COL_WIDTH_MAX;
-    n0 = rest - COL_WIDTH_MAX;
-  }
-
-  return {
-    ...current,
-    [key]: formatWidth(v),
-    [others[0]]: formatWidth(n0),
-    [others[1]]: formatWidth(n1),
-  };
-}
+import { ColumnSplitsControl } from "./ColumnSplitsControl";
 
 const NAV_KEYS = new Set([
   "Backspace",
@@ -119,7 +65,7 @@ type Props = {
   onAdd: (column: 2 | 3) => void;
   onRemove: (id: string) => void;
   onSave: () => void;
-  onWidthsChange: (widths: LandingLayout["columnWidths"]) => void;
+  onSplitsChange: (splits: ColumnSplits) => void;
 };
 
 export function ImageEditorPanel({
@@ -131,7 +77,7 @@ export function ImageEditorPanel({
   onAdd,
   onRemove,
   onSave,
-  onWidthsChange,
+  onSplitsChange,
 }: Props) {
   const selected = layout.images.find((i) => i.id === selectedId) ?? null;
   const colCount = selected
@@ -139,39 +85,6 @@ export function ImageEditorPanel({
     : 0;
   const maxOrder = Math.min(50, Math.max(1, colCount));
   const displayOrder = selected ? (selected.order ?? 0) + 1 : 1;
-
-  const [widthDrafts, setWidthDrafts] = useState<Record<ColKey, string>>({
-    col1: widthToDisplay(layout.columnWidths.col1),
-    col2: widthToDisplay(layout.columnWidths.col2),
-    col3: widthToDisplay(layout.columnWidths.col3),
-  });
-  const [widthFocused, setWidthFocused] = useState<ColKey | null>(null);
-
-  useEffect(() => {
-    setWidthDrafts((prev) => {
-      const next = { ...prev };
-      for (const key of ["col1", "col2", "col3"] as const) {
-        if (widthFocused === key) continue;
-        next[key] = widthToDisplay(layout.columnWidths[key]);
-      }
-      return next;
-    });
-  }, [layout.columnWidths, widthFocused]);
-
-  function commitColumnWidth(key: ColKey, raw: string) {
-    const n = parseDigits(raw);
-    const next = distributeWidths(
-      layout.columnWidths,
-      key,
-      n === null ? COL_WIDTH_MIN : n,
-    );
-    onWidthsChange(next);
-    setWidthDrafts({
-      col1: widthToDisplay(next.col1),
-      col2: widthToDisplay(next.col2),
-      col3: widthToDisplay(next.col3),
-    });
-  }
 
   function stepNumeric(
     id: string,
@@ -190,37 +103,10 @@ export function ImageEditorPanel({
         {dirty && <span className="text-amber-700">unsaved</span>}
       </div>
 
-      <section className="space-y-1.5 border-b border-black/10 pb-3">
-        <p>Column widths</p>
-        {(["col1", "col2", "col3"] as const).map((key) => (
-          <label key={key} className="flex items-center justify-between gap-2">
-            <span>{key}</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              className="w-24 rounded border border-black/20 px-1.5 py-1"
-              value={widthDrafts[key]}
-              onKeyDown={(e) => {
-                onDigitsKeyDown(e);
-                if (e.key === "Enter") {
-                  e.currentTarget.blur();
-                }
-              }}
-              onPaste={(e) => onDigitsPaste(e)}
-              onFocus={() => setWidthFocused(key)}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/\D/g, "");
-                setWidthDrafts((prev) => ({ ...prev, [key]: raw }));
-              }}
-              onBlur={(e) => {
-                setWidthFocused(null);
-                commitColumnWidth(key, e.target.value);
-              }}
-            />
-          </label>
-        ))}
-      </section>
+      <ColumnSplitsControl
+        splits={layout.columnSplits}
+        onChange={onSplitsChange}
+      />
 
       <div className="flex gap-1.5">
         <button
