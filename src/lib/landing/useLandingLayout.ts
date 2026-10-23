@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ColumnId, ImageItem, LandingLayout } from "./layout-types";
-import { STORAGE_KEY } from "./layout-types";
+import { normalizeLayout, STORAGE_KEY } from "./layout-types";
 import {
   clampImageInColumn,
   ensureColumnOrders,
@@ -10,17 +10,6 @@ import {
   reflowColumn,
   sortByOrder,
 } from "./stack";
-
-function isLandingLayout(value: unknown): value is LandingLayout {
-  if (!value || typeof value !== "object") return false;
-  const v = value as LandingLayout;
-  return (
-    v.version === 1 &&
-    Array.isArray(v.images) &&
-    typeof v.contentHeight === "number" &&
-    !!v.columnWidths
-  );
-}
 
 function hydrate(raw: LandingLayout): LandingLayout {
   return {
@@ -33,8 +22,9 @@ async function fetchSeed(): Promise<LandingLayout> {
   const res = await fetch("/landing/layout.json", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load layout seed");
   const data: unknown = await res.json();
-  if (!isLandingLayout(data)) throw new Error("Invalid layout seed");
-  return hydrate(data);
+  const normalized = normalizeLayout(data);
+  if (!normalized) throw new Error("Invalid layout seed");
+  return hydrate(normalized);
 }
 
 function aspectsFrom(images: ImageItem[]): Record<string, number> {
@@ -57,10 +47,10 @@ export function useLandingLayout() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
-          const parsed: unknown = JSON.parse(raw);
-          if (isLandingLayout(parsed)) {
+          const normalized = normalizeLayout(JSON.parse(raw) as unknown);
+          if (normalized) {
             if (!cancelled) {
-              setLayout(hydrate(parsed));
+              setLayout(hydrate(normalized));
               setReady(true);
             }
             return;

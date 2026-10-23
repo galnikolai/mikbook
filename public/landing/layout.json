@@ -1,9 +1,8 @@
 {
-  "version": 1,
-  "columnWidths": {
-    "col1": "22%",
-    "col2": "39%",
-    "col3": "39%"
+  "version": 2,
+  "columnSplits": {
+    "split12": 22,
+    "split23": 61
   },
   "contentHeight": 2200,
   "images": [
