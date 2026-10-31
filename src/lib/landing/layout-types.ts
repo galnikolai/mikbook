@@ -45,7 +45,7 @@ export type LandingLayout = {
 };
 
 /** bump when layout semantics change */
-export const STORAGE_KEY = "mikbook-landing-layout-v5";
+export const STORAGE_KEY = "mikbook-landing-layout-v6";
 
 export const DEFAULT_LAYOUT_SPLITS = DEFAULT_SPLITS;
 

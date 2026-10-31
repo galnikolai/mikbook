@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   COL_MIN,
+  setColPercent,
   setSplit12,
   setSplit23,
   splitsToPercents,
@@ -89,15 +90,78 @@ export function ColumnSplitsControl({ splits, onChange }: Props) {
           onPointerDown={(e) => startDrag("23", e)}
         />
       </div>
-      <div className="flex justify-between text-[10px] text-black/55 tabular-nums">
-        <span>col1 {percents.col1}%</span>
-        <span>col2 {percents.col2}%</span>
-        <span>col3 {percents.col3}%</span>
+
+      <div className="landing-percent-row">
+        <PercentInput
+          label="col1 %"
+          value={percents.col1}
+          onCommit={(n) => onChange(setColPercent(splits, 1, n))}
+        />
+        <PercentInput
+          label="col2 %"
+          value={percents.col2}
+          onCommit={(n) => onChange(setColPercent(splits, 2, n))}
+        />
+        <PercentInput
+          label="col3 %"
+          value={percents.col3}
+          onCommit={(n) => onChange(setColPercent(splits, 3, n))}
+        />
       </div>
       <p className="text-[10px] text-black/40">
-        Drag the handles · each column ≥ {COL_MIN}%
+        Drag or type % · each column ≥ {COL_MIN}%
       </p>
     </section>
+  );
+}
+
+function PercentInput({
+  label,
+  value,
+  onCommit,
+}: {
+  label: string;
+  value: number;
+  onCommit: (n: number) => void;
+}) {
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
+  function commitFrom(raw: string) {
+    const n = Number.parseFloat(raw.replace(",", "."));
+    if (!Number.isFinite(n)) {
+      setDraft(String(value));
+      return;
+    }
+    onCommit(n);
+  }
+
+  return (
+    <label className="landing-percent-field">
+      <span>{label}</span>
+      <input
+        type="text"
+        inputMode="decimal"
+        aria-label={`${label} width percent`}
+        value={draft}
+        onChange={(e) => {
+          const raw = e.target.value.replace(",", ".");
+          if (raw !== "" && !/^\d*\.?\d*$/.test(raw)) return;
+          setDraft(raw);
+        }}
+        onBlur={(e) => commitFrom(e.currentTarget.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commitFrom(e.currentTarget.value);
+            e.currentTarget.blur();
+          }
+        }}
+      />
+    </label>
   );
 }
 

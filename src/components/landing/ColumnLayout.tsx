@@ -1,8 +1,10 @@
 "use client";
 
-import { CHAPTERS } from "@/lib/landing/chapters";
+import { CHAPTERS } from "@/lib/i18n/dictionary";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { percentsToGrid, splitsToPercents } from "@/lib/landing/column-splits";
 import type { ColumnId, ImageItem, LandingLayout } from "@/lib/landing/layout-types";
+import { LanguageToggle } from "./LanguageToggle";
 import { MagnetColumn } from "./MagnetColumn";
 
 type Props = {
@@ -15,54 +17,96 @@ type Props = {
 };
 
 function Col1Text() {
+  const { t } = useLocale();
+
   return (
     <div className="landing-col1-inner">
-      <h1 className="landing-brand">MIKBOOK</h1>
-      <p>
-        Devenir un interne sous-alimenté puis un médecin assigné en justice n&apos;est
-        pas facile&nbsp;; il faut d&apos;abord une dure préparation.
-      </p>
-      <p>
-        Synthèse méthodique du programme des EDN, le MIKBOOK propose aux étudiants un
-        outil de mémorisation visuelle et logique des points essentiels, s&apos;appuyant
-        sur un graphisme particulier et un code de couleurs identique pour chaque item
-        de chaque chapitre, visant à un projet pédagogique global.
-      </p>
+      <div className="landing-col1-top">
+        <h1 className="landing-brand">{t.brand}</h1>
+        <LanguageToggle />
+      </div>
+      <p>{t.intro}</p>
+      <p>{t.body}</p>
       <p className="landing-cta">
-        <strong>Read the Mikbook</strong>
+        <button
+          type="button"
+          className="landing-cta-link"
+          onClick={() => window.dispatchEvent(new Event("mikbook:subscribe"))}
+        >
+          {t.ctaLead}
+        </button>
         <br />
-        or just play with it.
+        {t.ctaSub}
       </p>
       <address className="landing-meta not-italic">
-        @mikbook
+        <a href="mailto:hello@mikbook.com">{t.handle}</a>
         <br />
-        Editions Eyrolles
+        {t.publisher}
         <br />
-        1 rue Thénard
+        {t.address1}
         <br />
-        75005 Paris
+        {t.address2}
         <br />
-        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
-          Follow us on instagram
+        <a
+          href="https://www.instagram.com/mikbookofficiel/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t.instagram}
         </a>
       </address>
     </div>
   );
 }
 
-function Col2Chapters() {
+function Col2Menu() {
+  const { locale, t } = useLocale();
+
   return (
-    <nav className="landing-chapters relative z-[5]" aria-label="Chapitres">
-      <p className="landing-chapters__line">
-        {CHAPTERS.map((ch, i) => (
-          <span key={ch.code}>
-            {i > 0 ? " " : null}
-            <span className="landing-chapters__item">
-              {ch.n}-{ch.code}
+    <nav className="landing-menu" aria-label={t.chapters}>
+      <section className="landing-menu__section">
+        <h2 className="landing-menu__heading">{t.chapters}</h2>
+        <p className="landing-chapters__line">
+          {CHAPTERS.map((ch, i) => (
+            <span key={ch.code}>
+              {i > 0 ? " " : null}
+              <span className="landing-chapters__item">
+                ({ch.n}){ch.short[locale]}
+              </span>
             </span>
-          </span>
-        ))}
-      </p>
+          ))}
+        </p>
+      </section>
+
+      <section className="landing-menu__section">
+        <h2 className="landing-menu__heading">{t.practices}</h2>
+        <ul className="landing-menu__list">
+          <li>{t.flashcards}</li>
+          <li>{t.trivia}</li>
+          <li>{t.cases}</li>
+        </ul>
+      </section>
+
+      <section className="landing-menu__section">
+        <h2 className="landing-menu__heading">{t.games}</h2>
+        <ul className="landing-menu__list">
+          <li>{t.snake}</li>
+          <li>{t.drRex}</li>
+        </ul>
+      </section>
+
+      <section className="landing-menu__section">
+        <h2 className="landing-menu__heading">{t.videos}</h2>
+        <ul className="landing-menu__list">
+          <li>
+            {t.operate} <span aria-hidden>▶</span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="landing-menu__section">
+        <h2 className="landing-menu__heading">{t.collection}</h2>
+      </section>
     </nav>
   );
 }
@@ -88,7 +132,7 @@ export function ColumnLayout({
         className="hidden h-dvh overflow-hidden min-[900px]:grid"
         style={{ gridTemplateColumns: gridCols }}
       >
-        <aside className="min-w-0 overflow-x-hidden overflow-y-auto p-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <aside className="landing-col-pad min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Col1Text />
         </aside>
 
@@ -101,7 +145,7 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          header={<Col2Chapters />}
+          header={<Col2Menu />}
           className={`min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden${editMode ? " border-l border-black/10" : ""}`}
         />
 
@@ -119,7 +163,7 @@ export function ColumnLayout({
       </div>
 
       <div className="block min-[900px]:hidden">
-        <section className={`p-5${editMode ? " border-b border-black/10" : ""}`}>
+        <section className={`landing-col-pad${editMode ? " border-b border-black/10" : ""}`}>
           <Col1Text />
         </section>
         <MagnetColumn
@@ -131,7 +175,7 @@ export function ColumnLayout({
           onSelect={onSelect}
           onChange={onChange}
           onColumnWidth={onColumnWidth}
-          header={<Col2Chapters />}
+          header={<Col2Menu />}
           className={`relative${editMode ? " border-b border-black/10" : ""}`}
         />
         <MagnetColumn
