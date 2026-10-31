@@ -1,5 +1,5 @@
 /** Minimum width of any column as % of the row. */
-export const COL_MIN = 15;
+export const COL_MIN = 12;
 
 export type ColumnSplits = {
   /** % from left: end of col1 / start of col2 */
@@ -8,10 +8,10 @@ export type ColumnSplits = {
   split23: number;
 };
 
-/** Proportions close to kline.brussels at desktop: ~24 / 28 / 48 */
+/** kline.brussels at 1440: left = 70+11vw ≈ 15.9%, rest 40/60 */
 export const DEFAULT_SPLITS: ColumnSplits = {
-  split12: 24,
-  split23: 52,
+  split12: 15.9,
+  split23: 49.6,
 };
 
 export type ColumnPercents = {
