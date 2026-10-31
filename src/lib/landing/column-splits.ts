@@ -8,9 +8,10 @@ export type ColumnSplits = {
   split23: number;
 };
 
+/** Proportions close to kline.brussels at desktop: ~24 / 28 / 48 */
 export const DEFAULT_SPLITS: ColumnSplits = {
-  split12: 22,
-  split23: 61, // 22 + 39
+  split12: 24,
+  split23: 52,
 };
 
 export type ColumnPercents = {
@@ -50,6 +51,17 @@ export function setSplit12(current: ColumnSplits, next: number): ColumnSplits {
 
 export function setSplit23(current: ColumnSplits, next: number): ColumnSplits {
   return clampSplits(current.split12, next);
+}
+
+/** Set one column's width in %; the adjacent column absorbs the delta. */
+export function setColPercent(
+  current: ColumnSplits,
+  which: 1 | 2 | 3,
+  value: number,
+): ColumnSplits {
+  if (which === 1) return setSplit12(current, value);
+  if (which === 2) return setSplit23(current, current.split12 + value);
+  return setSplit23(current, 100 - value);
 }
 
 /** Migrate legacy col1/col2/col3 % strings into splits. */

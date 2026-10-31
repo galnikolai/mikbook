@@ -1,27 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --landing-bg: #f3efe8;
-  --landing-fg: #111111;
-  /* Default column ratios — override from JS via inline style on .landing-shell */
-  --col-1: 22%;
-  --col-2: 39%;
-  --col-3: 39%;
+  --landing-bg: #ffffff;
+  --landing-fg: #000000;
+  --col-1: 24%;
+  --col-2: 28%;
+  --col-3: 48%;
   --background: var(--landing-bg);
   --foreground: var(--landing-fg);
+  --landing-pad: 13px;
+  --landing-track: 0.05em;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-grotesk);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--landing-bg);
   color: var(--landing-fg);
-  font-family: var(--font-geist-sans), Helvetica, Arial, sans-serif;
+  font-family: var(--font-grotesk), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: var(--landing-track);
   margin: 0;
 }
 
@@ -58,22 +61,21 @@ body {
 
 .landing-col--fixed {
   overflow: hidden;
-  padding: 1.25rem 1.1rem;
+  padding: var(--landing-pad);
 }
 
 .landing-col--scroll {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* legacy Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .landing-col--scroll::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none;
 }
 
-/* Hide page scrollbar on mobile stack as well */
 html {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -89,40 +91,149 @@ html::-webkit-scrollbar {
   padding: 1rem 0.75rem 3rem;
 }
 
+.landing-col-pad {
+  padding: var(--landing-pad);
+}
+
+.landing-col-pad-top {
+  padding: var(--landing-pad) var(--landing-pad) 0;
+}
+
 .landing-col1-inner {
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
   max-width: 100%;
   min-width: 0;
   overflow-wrap: break-word;
 }
 
-.landing-brand {
-  font-size: 1.65rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+.landing-col1-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
   margin: 0 0 1rem;
+}
+
+.landing-brand {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin: 0;
   text-transform: uppercase;
 }
 
 .landing-col1-inner p {
-  margin: 0 0 0.9rem;
+  margin: 0 0 0.85rem;
 }
 
 .landing-cta {
-  margin-top: 1.25rem !important;
+  margin-top: 1.35rem !important;
+}
+
+.landing-cta-link {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.landing-cta-link:hover {
+  opacity: 0.65;
 }
 
 .landing-meta {
   margin-top: 1.5rem;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 12.5px;
+  font-style: normal;
+  line-height: 1.3;
 }
 
 .landing-meta a {
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+.landing-lang {
+  display: flex;
+  align-items: baseline;
+  gap: 0.28rem;
+  flex-shrink: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.landing-lang__btn {
+  background: none;
+  border: 0;
+  color: rgba(0, 0, 0, 0.32);
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-transform: lowercase;
+}
+
+.landing-lang__btn.is-active {
+  color: #000;
+}
+
+.landing-lang__btn:hover {
+  color: #000;
+}
+
+.landing-lang__sep {
+  color: rgba(0, 0, 0, 0.32);
+}
+
+.landing-menu {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0 2px 1.25rem;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
+}
+
+.landing-menu__section {
+  margin: 0 0 1.15rem;
+}
+
+.landing-menu__heading {
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+.landing-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.landing-menu__list li {
+  margin: 0;
+  line-height: 1.45;
 }
 
 .landing-chapters {
@@ -142,11 +253,11 @@ html::-webkit-scrollbar {
   width: 100%;
   min-width: 0;
   white-space: normal;
-  font-size: 11px;
-  line-height: 1.55;
+  font-size: 12.5px;
+  line-height: 1.5;
   font-variant-numeric: tabular-nums;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .landing-chapters__item {
@@ -156,6 +267,31 @@ html::-webkit-scrollbar {
 
 .landing-mobile-block {
   padding: 1.25rem 1rem;
+}
+
+.landing-percent-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.landing-percent-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.landing-percent-field input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.3rem 0.35rem;
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .subscribe-page {
@@ -168,6 +304,18 @@ html::-webkit-scrollbar {
   background: var(--landing-bg);
   color: var(--landing-fg);
   max-width: 28rem;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+.subscribe-page h1 {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .subscribe-page a {

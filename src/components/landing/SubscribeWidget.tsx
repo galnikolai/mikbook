@@ -2,22 +2,30 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 type PlanId = "monthly" | "yearly";
 
-const PLANS: { id: PlanId; label: string; price: string; hint: string }[] = [
-  { id: "monthly", label: "Mensuel", price: "19,99 €", hint: "/ mois" },
-  { id: "yearly", label: "Annuel", price: "149 €", hint: "/ an" },
-];
-
 export function SubscribeWidget() {
+  const { t } = useLocale();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<PlanId | "portal" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const plans: { id: PlanId; label: string; price: string; hint: string }[] = [
+    { id: "monthly", label: t.monthly, price: "19,99 €", hint: t.perMonth },
+    { id: "yearly", label: t.yearly, price: "149 €", hint: t.perYear },
+  ];
+
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const openFromCta = () => setOpen(true);
+    window.addEventListener("mikbook:subscribe", openFromCta);
+    return () => window.removeEventListener("mikbook:subscribe", openFromCta);
   }, []);
 
   async function startCheckout(plan: PlanId) {
@@ -31,11 +39,11 @@ export function SubscribeWidget() {
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) {
-        throw new Error(data.error || "Checkout unavailable");
+        throw new Error(data.error || t.checkoutError);
       }
       window.location.href = data.url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(e instanceof Error ? e.message : t.genericError);
       setLoading(null);
     }
   }
@@ -47,11 +55,11 @@ export function SubscribeWidget() {
       const res = await fetch("/api/stripe/portal", { method: "POST" });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) {
-        throw new Error(data.error || "Portal unavailable");
+        throw new Error(data.error || t.portalError);
       }
       window.location.href = data.url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(e instanceof Error ? e.message : t.genericError);
       setLoading(null);
     }
   }
@@ -67,7 +75,7 @@ export function SubscribeWidget() {
             className="cursor-pointer rounded-full bg-black px-5 py-3.5 text-[13px] font-semibold tracking-wide text-white shadow-[0_8px_24px_rgba(0,0,0,0.22)]"
             onClick={() => setOpen(true)}
           >
-            S&apos;abonner
+            {t.subscribe}
           </button>
         ) : (
           <div className="w-[min(291px,calc(100vw-2rem))] rounded-xl border border-white/12 bg-black p-3.5 text-white shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
@@ -76,17 +84,15 @@ export function SubscribeWidget() {
               <button
                 type="button"
                 className="cursor-pointer px-1 text-xl leading-none text-white"
-                aria-label="Fermer"
+                aria-label={t.close}
                 onClick={() => setOpen(false)}
               >
                 ×
               </button>
             </div>
-            <p className="mb-3 text-xs text-white/55">
-              Abonnement — accès à la plateforme
-            </p>
+            <p className="mb-3 text-xs text-white/55">{t.subscribeLead}</p>
             <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
-              {PLANS.map((plan) => (
+              {plans.map((plan) => (
                 <li key={plan.id}>
                   <button
                     type="button"
@@ -111,7 +117,7 @@ export function SubscribeWidget() {
               disabled={loading !== null}
               onClick={openPortal}
             >
-              {loading === "portal" ? "…" : "Gérer mon abonnement"}
+              {loading === "portal" ? "…" : t.manage}
             </button>
             {error && <p className="mt-2 text-[11px] text-[#ff6b7a]">{error}</p>}
           </div>
