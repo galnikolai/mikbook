@@ -20,41 +20,48 @@ function Col1Text() {
   const { t } = useLocale();
 
   return (
-    <div className="landing-col1-inner">
-      <div className="landing-col1-top">
-        <h1 className="landing-brand">{t.brand}</h1>
-        <LanguageToggle />
+    <div className="landing-col1">
+      <div className="landing-col1-inner">
+        <div className="landing-text">
+          <p>
+            {t.brand}.
+            <br />
+            {t.intro}
+          </p>
+          <p>{t.body}</p>
+        </div>
+        <div className="landing-text-btn">
+          <button
+            type="button"
+            className="landing-cta-link"
+            onClick={() => window.dispatchEvent(new Event("mikbook:subscribe"))}
+          >
+            {t.ctaLead}
+          </button>
+        </div>
+        <div className="landing-text">
+          <p>{t.ctaSub}</p>
+          <p>
+            <a href="mailto:hello@mikbook.com">{t.handle}</a>
+            <br />
+            {t.publisher}
+          </p>
+          <p>
+            {t.address1}
+            <br />
+            {t.address2}
+          </p>
+          <p>
+            <a
+              href="https://www.instagram.com/mikbookofficiel/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t.instagram}
+            </a>
+          </p>
+        </div>
       </div>
-      <p>{t.intro}</p>
-      <p>{t.body}</p>
-      <p className="landing-cta">
-        <button
-          type="button"
-          className="landing-cta-link"
-          onClick={() => window.dispatchEvent(new Event("mikbook:subscribe"))}
-        >
-          {t.ctaLead}
-        </button>
-        <br />
-        {t.ctaSub}
-      </p>
-      <address className="landing-meta not-italic">
-        <a href="mailto:hello@mikbook.com">{t.handle}</a>
-        <br />
-        {t.publisher}
-        <br />
-        {t.address1}
-        <br />
-        {t.address2}
-        <br />
-        <a
-          href="https://www.instagram.com/mikbookofficiel/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t.instagram}
-        </a>
-      </address>
     </div>
   );
 }
@@ -64,49 +71,52 @@ function Col2Menu() {
 
   return (
     <nav className="landing-menu" aria-label={t.chapters}>
-      <section className="landing-menu__section">
-        <h2 className="landing-menu__heading">{t.chapters}</h2>
-        <p className="landing-chapters__line">
-          {CHAPTERS.map((ch, i) => (
-            <span key={ch.code}>
-              {i > 0 ? " " : null}
-              <span className="landing-chapters__item">
-                ({ch.n}){ch.short[locale]}
+      <LanguageToggle className="landing-lang--title" />
+      <div className="landing-menu__body">
+        <section className="landing-menu__section">
+          <h2 className="landing-menu__heading">{t.chapters}</h2>
+          <p className="landing-chapters__line">
+            {CHAPTERS.map((ch, i) => (
+              <span key={ch.code}>
+                {i > 0 ? " " : null}
+                <span className="landing-chapters__item">
+                  ({ch.n}){ch.short[locale]}
+                </span>
               </span>
-            </span>
-          ))}
-        </p>
-      </section>
+            ))}
+          </p>
+        </section>
 
-      <section className="landing-menu__section">
-        <h2 className="landing-menu__heading">{t.practices}</h2>
-        <ul className="landing-menu__list">
-          <li>{t.flashcards}</li>
-          <li>{t.trivia}</li>
-          <li>{t.cases}</li>
-        </ul>
-      </section>
+        <section className="landing-menu__section">
+          <h2 className="landing-menu__heading">{t.practices}</h2>
+          <ul className="landing-menu__list">
+            <li>{t.flashcards}</li>
+            <li>{t.trivia}</li>
+            <li>{t.cases}</li>
+          </ul>
+        </section>
 
-      <section className="landing-menu__section">
-        <h2 className="landing-menu__heading">{t.games}</h2>
-        <ul className="landing-menu__list">
-          <li>{t.snake}</li>
-          <li>{t.drRex}</li>
-        </ul>
-      </section>
+        <section className="landing-menu__section">
+          <h2 className="landing-menu__heading">{t.games}</h2>
+          <ul className="landing-menu__list">
+            <li>{t.snake}</li>
+            <li>{t.drRex}</li>
+          </ul>
+        </section>
 
-      <section className="landing-menu__section">
-        <h2 className="landing-menu__heading">{t.videos}</h2>
-        <ul className="landing-menu__list">
-          <li>
-            {t.operate} <span aria-hidden>▶</span>
-          </li>
-        </ul>
-      </section>
+        <section className="landing-menu__section">
+          <h2 className="landing-menu__heading">{t.videos}</h2>
+          <ul className="landing-menu__list">
+            <li>
+              {t.operate} <span aria-hidden>▶</span>
+            </li>
+          </ul>
+        </section>
 
-      <section className="landing-menu__section">
-        <h2 className="landing-menu__heading">{t.collection}</h2>
-      </section>
+        <section className="landing-menu__section">
+          <h2 className="landing-menu__heading">{t.collection}</h2>
+        </section>
+      </div>
     </nav>
   );
 }
@@ -121,6 +131,8 @@ export function ColumnLayout({
 }: Props) {
   const gridCols = percentsToGrid(splitsToPercents(layout.columnSplits));
 
+  const { t } = useLocale();
+
   return (
     <div
       className="min-h-dvh bg-[var(--landing-bg)] text-[var(--landing-fg)]"
@@ -128,9 +140,12 @@ export function ColumnLayout({
         if (editMode) onSelect(null);
       }}
     >
+      <p className="landing-corner-brand" aria-hidden>
+        {t.brand.toLowerCase()}
+      </p>
       <div
-        className="hidden h-dvh overflow-hidden min-[900px]:grid"
-        style={{ gridTemplateColumns: gridCols }}
+        className="landing-kline-grid hidden min-[900px]:grid"
+        style={editMode ? { gridTemplateColumns: gridCols } : undefined}
       >
         <aside className="landing-col-pad min-w-0 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Col1Text />
