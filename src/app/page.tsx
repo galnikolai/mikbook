@@ -6,7 +6,7 @@ export default function Home() {
     <Suspense
       fallback={
         <div className="flex min-h-dvh items-center justify-center bg-[var(--landing-bg)] text-sm text-black/50">
-          Loading…
+          Chargement…
         </div>
       }
     >

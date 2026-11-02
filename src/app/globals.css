@@ -1,28 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --landing-bg: #f3efe8;
-  --landing-fg: #111111;
-  /* Default column ratios — override from JS via inline style on .landing-shell */
-  --col-1: 22%;
-  --col-2: 39%;
-  --col-3: 39%;
+  --landing-bg: #ffffff;
+  --landing-fg: #000000;
+  /* kline.brussels: html 10px → 7rem=70px, left = 7rem + 11vw, rest 40/60 */
+  --kline-left: calc(70px + 11%);
+  --kline-rest: calc(100% - (70px + 11%));
+  --col-1: var(--kline-left);
+  --col-2: calc(var(--kline-rest) * 0.4);
+  --col-3: calc(var(--kline-rest) * 0.6);
   --background: var(--landing-bg);
   --foreground: var(--landing-fg);
+  --landing-pad: 13px;
+  --landing-track: 0.05em;
+  /* kline.brussels: html 10px → --font-size--book: 1.25rem = 12.5px */
+  --font-size--book: 12.5px;
+  --lineheight: 1.3;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-grotesk);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--landing-bg);
   color: var(--landing-fg);
-  font-family: var(--font-geist-sans), Helvetica, Arial, sans-serif;
+  font-family: var(--font-grotesk), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: var(--font-size--book);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: var(--landing-track);
+  line-height: var(--lineheight);
+  text-transform: none;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .landing-shell {
@@ -36,6 +51,12 @@ body {
 
 .landing-mobile {
   display: block;
+}
+
+.landing-kline-grid {
+  grid-template-columns: var(--col-1) var(--col-2) var(--col-3);
+  height: 100dvh;
+  overflow: hidden;
 }
 
 @media (min-width: 900px) {
@@ -58,23 +79,21 @@ body {
 
 .landing-col--fixed {
   overflow: hidden;
-  padding: 1.25rem 1.1rem;
+  padding: var(--landing-pad);
 }
 
 .landing-col--scroll {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* legacy Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .landing-col--scroll::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none;
 }
 
-/* Hide page scrollbar on mobile stack as well */
 html {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -90,49 +109,297 @@ html::-webkit-scrollbar {
   padding: 1rem 0.75rem 3rem;
 }
 
-.landing-col1-inner {
-  font-size: 13px;
-  line-height: 1.45;
-  max-width: 16rem;
+.landing-col-pad {
+  padding: var(--landing-pad);
 }
 
-.landing-brand {
-  font-size: 1.65rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  margin: 0 0 1rem;
-  text-transform: uppercase;
+.landing-col-pad-top {
+  padding: var(--landing-pad) var(--landing-pad) 0;
+}
+
+.landing-col1 {
+  position: relative;
+  min-width: 0;
+}
+
+/*
+ * kline .text--small / .book / .menu__table:
+ * neue-haas-grotesk-display, 12.5px, 500, 0.05em, lh 1.3
+ * (Typekit kit loads ONLY weight 500 — so buttons also render as 500)
+ */
+.landing-col1-inner {
+  font-family: inherit;
+  font-size: var(--font-size--book);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: var(--lineheight);
+  text-transform: none;
+  width: 85%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 1200px) {
+  .landing-col1-inner {
+    width: 100%;
+  }
+}
+
+/* kline .text { margin-bottom: 1em } */
+.landing-text {
+  margin: 0 0 1em;
 }
 
 .landing-col1-inner p {
-  margin: 0 0 0.9rem;
+  margin: 0;
+  font-size: inherit;
+  font-weight: 400;
+  letter-spacing: inherit;
+  line-height: var(--lineheight);
 }
 
-.landing-cta {
-  margin-top: 1.25rem !important;
+.landing-col1-inner p + p {
+  padding-top: calc(var(--lineheight) * 1em);
 }
 
-.landing-meta {
-  margin-top: 1.5rem;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.landing-meta a {
+.landing-col1-inner a {
   color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: auto;
 }
 
-.landing-col2-intro {
+.landing-col1-inner a:hover {
+  text-decoration: none;
+}
+
+.landing-text-btn {
+  margin: 0;
+}
+
+/* kline .book__buttons-item — CSS says 400, but only 500 face is loaded → looks 500 */
+.landing-cta-link {
+  display: inline-block;
+  margin: 0 2em 1em 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-size--book);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: var(--lineheight);
+  text-decoration: underline;
+  text-underline-offset: auto;
+}
+
+.landing-cta-link:hover,
+.landing-cta-link:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+/* kline .blocks__item-title: 15px / 500 / lh 15px / tracking 0.05em */
+.landing-lang {
+  display: flex;
+  align-items: baseline;
+  gap: 0.28rem;
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: var(--font-size--book);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: var(--lineheight);
+  text-transform: lowercase;
+}
+
+.landing-lang--title {
+  font-size: 15px;
+  line-height: 15px;
+  letter-spacing: 0.05em;
+  margin-top: 16.25px;
+}
+
+.landing-lang__btn {
+  background: none;
+  border: 0;
+  color: rgba(0, 0, 0, 0.32);
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-transform: lowercase;
+}
+
+.landing-lang__btn.is-active {
+  color: #000;
+}
+
+.landing-lang__btn:hover {
+  color: #000;
+}
+
+.landing-lang__sep {
+  color: rgba(0, 0, 0, 0.32);
+}
+
+/* Figma Column 2 — https://www.figma.com/design/irndSCVXDbBpNjSAJEKjtK */
+.landing-menu {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0 0 1.25rem;
+  font-family: inherit;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 550;
+  letter-spacing: normal;
+  line-height: 1.618;
+  text-transform: none;
+}
+
+.landing-corner-brand {
+  position: fixed;
+  left: var(--landing-pad);
+  bottom: var(--landing-pad);
+  z-index: 20;
+  margin: 0;
+  font-family: inherit;
+  font-size: var(--font-size--book);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: var(--lineheight);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.landing-menu__body {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 50px;
+  padding-left: 70px;
+  width: 85%;
+  max-width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .landing-menu__body {
+    width: 100%;
+  }
+}
+
+.landing-menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+}
+
+/* Figma: Inter Regular 16px #5d5d5d */
+nav.landing-menu h2.landing-menu__heading {
+  color: #5d5d5d;
+  font-family: inherit;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: normal;
+  margin: 0;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.landing-menu__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 13.7px;
+  margin: 0;
+  padding: 0;
+}
+
+/* Figma: Inter Medium 14px / ~1.618 */
+.landing-menu__list li {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  letter-spacing: normal;
+  line-height: 1.618;
+}
+
+.landing-chapters {
   position: relative;
   z-index: 5;
-  padding: 0.25rem 0.5rem 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0.15rem 0.35rem 1.25rem;
+}
+
+/* Figma: Inter Medium 14px / line-height 2.1 */
+.landing-menu .landing-chapters__line {
+  display: block;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
+  white-space: normal;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  letter-spacing: normal;
+  line-height: 2.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-chapters__item {
+  display: inline;
+  white-space: nowrap;
 }
 
 .landing-mobile-block {
   padding: 1.25rem 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.landing-percent-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.landing-percent-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.landing-percent-field input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.3rem 0.35rem;
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .subscribe-page {
@@ -145,6 +412,18 @@ html::-webkit-scrollbar {
   background: var(--landing-bg);
   color: var(--landing-fg);
   max-width: 28rem;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+.subscribe-page h1 {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .subscribe-page a {
