@@ -141,7 +141,7 @@ export function ColumnLayout({
       }}
     >
       <p className="landing-corner-brand" aria-hidden>
-        {t.brand.toLowerCase()}
+        {t.brand.toLowerCase()}.
       </p>
       <div
         className="landing-kline-grid hidden min-[900px]:grid"

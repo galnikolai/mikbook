@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter_Tight } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
-const grotesk = Inter_Tight({
+/* Figma Column 2: Inter Regular 400 / Medium 550 */
+const grotesk = Inter({
   variable: "--font-grotesk",
   subsets: ["latin", "latin-ext"],
   display: "swap",
