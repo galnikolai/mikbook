@@ -6,6 +6,8 @@ export type TopicItem = {
   title: { fr: string; en: string };
   /** Optional topic-only illustration (overrides chapter topicImageSrc) */
   imageSrc?: string;
+  /** Multi-page schema pages (preferred over imageSrc when set) */
+  imageSrcs?: string[];
 };
 
 export type TopicSection = {
@@ -31,7 +33,8 @@ export type FlatTopic = {
 const PEDIATRIE: ChapterContent = {
   n: 15,
   imageSrc: "/chapters/pediatrie.png",
-  topicImageSrc: "/chapters/pediatrie-topic.png",
+  /** Blurred schema stand-in for topics without real illustrations yet */
+  topicImageSrc: "/chapters/schema-placeholder.png",
   sections: [
     {
       items: [
@@ -49,6 +52,10 @@ const PEDIATRIE: ChapterContent = {
             fr: "Souffle cardiaque chez l'enfant",
             en: "Heart murmur in children",
           },
+          imageSrcs: [
+            "/chapters/schema-agitation-1.png",
+            "/chapters/schema-agitation-2.png",
+          ],
         },
         {
           n: 3,
@@ -71,6 +78,10 @@ const PEDIATRIE: ChapterContent = {
             fr: "Infections broncho-pulmonaires",
             en: "Bronchopulmonary infections",
           },
+          imageSrcs: [
+            "/chapters/schema-delirant-1.png",
+            "/chapters/schema-delirant-2.png",
+          ],
         },
         { n: 7, title: { fr: "Coqueluche", en: "Whooping cough" } },
         {
@@ -79,6 +90,11 @@ const PEDIATRIE: ChapterContent = {
             fr: "Reflux gastro-oesophagien de l'enfant",
             en: "Pediatric gastroesophageal reflux",
           },
+          imageSrcs: [
+            "/chapters/schema-suicidaire-1.png",
+            "/chapters/schema-suicidaire-2.png",
+            "/chapters/schema-suicidaire-3.png",
+          ],
         },
         {
           n: 9,
@@ -128,7 +144,6 @@ const PEDIATRIE: ChapterContent = {
             fr: "Convulsions du nourrisson",
             en: "Infant seizures",
           },
-          imageSrc: "/chapters/schema-agitation.png",
         },
         {
           n: 16,
