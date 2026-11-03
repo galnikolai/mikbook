@@ -80,7 +80,7 @@ export function SubscribeWidget() {
         ) : (
           <div className="w-[min(291px,calc(100vw-2rem))] rounded-xl border border-white/12 bg-black p-3.5 text-white shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
             <div className="mb-1.5 flex items-center justify-between gap-2">
-              <strong className="text-sm">MIKBOOK</strong>
+              <strong className="site-brand text-sm">MIKBOOK</strong>
               <button
                 type="button"
                 className="cursor-pointer px-1 text-xl leading-none text-white"

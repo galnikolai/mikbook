@@ -27,7 +27,7 @@ function Col1Text() {
       <div className="landing-col1-inner">
         <div className="landing-text">
           <p>
-            {t.brand}.
+            <span className="site-brand">{t.brand}.</span>
             <br />
             {t.intro}
           </p>

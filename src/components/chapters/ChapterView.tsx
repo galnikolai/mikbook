@@ -10,6 +10,7 @@ import {
   topicId,
 } from "@/lib/chapters/content";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { ChapterMedia } from "./ChapterMedia";
 
 type Props = {
   n: number;
@@ -28,7 +29,7 @@ export function ChapterView({ n }: Props) {
       <div className="chapter-page">
         <div className="chapter-main">
           <p className="chapter-missing">Chapitre introuvable.</p>
-          <Link href="/" className="chapter-back">
+          <Link href="/" className="chapter-back site-brand">
             {t.brand}
           </Link>
         </div>
@@ -146,17 +147,7 @@ export function ChapterView({ n }: Props) {
       </div>
 
       {content?.imageSrc ? (
-        <aside className="chapter-media" aria-hidden>
-          <Image
-            src={content.imageSrc}
-            alt=""
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 40vw"
-            className="chapter-media__img"
-            style={{ objectFit: "cover", objectPosition: "center top" }}
-          />
-        </aside>
+        <ChapterMedia src={content.imageSrc} />
       ) : (
         <aside className="chapter-media chapter-media--empty" aria-hidden />
       )}

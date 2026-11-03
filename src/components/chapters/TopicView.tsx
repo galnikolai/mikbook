@@ -10,6 +10,7 @@ import {
   getTopic,
 } from "@/lib/chapters/content";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { ChapterMedia } from "./ChapterMedia";
 
 type Props = {
   chapterN: number;
@@ -24,9 +25,16 @@ export function TopicView({ chapterN, topicId }: Props) {
   const prev = getAdjacentTopic(chapterN, topicId, -1);
   const next = getAdjacentTopic(chapterN, topicId, 1);
   const title = chapterTitle(chapterN, locale);
+  const imageSrcs = topic?.item.imageSrcs;
   const imageSrc =
-    topic?.item.imageSrc ?? content?.topicImageSrc ?? content?.imageSrc;
-  const schemaImage = Boolean(topic?.item.imageSrc);
+    imageSrcs?.[0] ??
+    topic?.item.imageSrc ??
+    content?.topicImageSrc ??
+    content?.imageSrc;
+  // Real topic schemas and the chapter placeholder sheet use contain layout
+  const schemaImage = Boolean(
+    imageSrcs?.length || topic?.item.imageSrc || content?.topicImageSrc,
+  );
 
   if (!meta || !topic) {
     return (
@@ -115,24 +123,12 @@ export function TopicView({ chapterN, topicId }: Props) {
         </div>
       </div>
 
-      {imageSrc ? (
-        <aside
-          className={`chapter-media${schemaImage ? " chapter-media--schema" : ""}`}
-          aria-hidden
-        >
-          <Image
-            src={imageSrc}
-            alt=""
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 40vw"
-            className="chapter-media__img"
-            style={{
-              objectFit: schemaImage ? "contain" : "cover",
-              objectPosition: "center top",
-            }}
-          />
-        </aside>
+      {imageSrcs?.length || imageSrc ? (
+        <ChapterMedia
+          src={imageSrc}
+          srcs={imageSrcs}
+          schema={schemaImage}
+        />
       ) : (
         <aside className="chapter-media chapter-media--empty" aria-hidden />
       )}

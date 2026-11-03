@@ -1,16 +1,45 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Jost } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const jost = Jost({
+const neueHaas = localFont({
+  src: [
+    {
+      path: "./fonts/NeueHaasGroteskDisplayPro-35ExtraLight.otf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "./fonts/NeueHaasGroteskDisplayPro-55Roman.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/NeueHaasGroteskDisplayPro-65Medium.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/NeueHaasGroteskDisplayPro-75Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-grotesk",
-  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const futuraBrand = localFont({
+  src: "./fonts/FuturaCyrillicMedium.ttf",
+  variable: "--font-brand",
+  display: "swap",
+  weight: "500",
 });
 
 export const metadata: Metadata = {
@@ -23,9 +52,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
-      className={`${jost.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${neueHaas.variable} ${geistMono.variable} ${futuraBrand.variable} h-full antialiased`}
     >
-      <body className={`${jost.className} min-h-full`}>{children}</body>
+      <body className={`${neueHaas.className} min-h-full`}>{children}</body>
     </html>
   );
 }
