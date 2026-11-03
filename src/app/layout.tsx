@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Geist_Mono, Jost } from "next/font/google";
 import "./globals.css";
 
-/* Figma Column 2: Inter Regular 400 / Medium 550 */
-const grotesk = Inter({
+const jost = Jost({
   variable: "--font-grotesk",
   subsets: ["latin", "latin-ext"],
   display: "swap",
@@ -24,9 +23,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
-      className={`${grotesk.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jost.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className={`${grotesk.className} min-h-full`}>{children}</body>
+      <body className={`${jost.className} min-h-full`}>{children}</body>
     </html>
   );
 }

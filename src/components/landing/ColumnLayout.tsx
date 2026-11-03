@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { CHAPTERS } from "@/lib/i18n/dictionary";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { percentsToGrid, splitsToPercents } from "@/lib/landing/column-splits";
 import type { ColumnId, ImageItem, LandingLayout } from "@/lib/landing/layout-types";
 import { LanguageToggle } from "./LanguageToggle";
 import { MagnetColumn } from "./MagnetColumn";
+
+const FIRST_CHAPTER_HREF = "/chapters/15";
 
 type Props = {
   layout: LandingLayout;
@@ -31,13 +34,9 @@ function Col1Text() {
           <p>{t.body}</p>
         </div>
         <div className="landing-text-btn">
-          <button
-            type="button"
-            className="landing-cta-link"
-            onClick={() => window.dispatchEvent(new Event("mikbook:subscribe"))}
-          >
+          <Link href={FIRST_CHAPTER_HREF} className="landing-cta-link">
             {t.ctaLead}
-          </button>
+          </Link>
         </div>
         <div className="landing-text">
           <p>{t.ctaSub}</p>
@@ -79,9 +78,9 @@ function Col2Menu() {
             {CHAPTERS.map((ch, i) => (
               <span key={ch.code}>
                 {i > 0 ? " " : null}
-                <span className="landing-chapters__item">
+                <Link href={`/chapters/${ch.n}`} className="landing-chapters__item">
                   ({ch.n}){ch.short[locale]}
-                </span>
+                </Link>
               </span>
             ))}
           </p>
