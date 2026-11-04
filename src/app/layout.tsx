@@ -7,22 +7,27 @@ import "./globals.css";
 const neueHaas = localFont({
   src: [
     {
-      path: "./fonts/NeueHaasGroteskDisplayPro-35ExtraLight.otf",
+      path: "./fonts/NeueHaasDisplayThin.ttf",
       weight: "200",
       style: "normal",
     },
     {
-      path: "./fonts/NeueHaasGroteskDisplayPro-55Roman.otf",
+      path: "./fonts/NeueHaasDisplayLight.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "./fonts/NeueHaasDisplayRoman.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "./fonts/NeueHaasGroteskDisplayPro-65Medium.otf",
+      path: "./fonts/NeueHaasDisplayMedium.ttf",
       weight: "500",
       style: "normal",
     },
     {
-      path: "./fonts/NeueHaasGroteskDisplayPro-75Bold.otf",
+      path: "./fonts/NeueHaasDisplayBold.ttf",
       weight: "700",
       style: "normal",
     },
