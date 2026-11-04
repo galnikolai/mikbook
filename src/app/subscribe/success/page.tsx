@@ -42,7 +42,10 @@ function SuccessInner() {
       {status === "loading" && <p>Confirmation du paiement…</p>}
       {status === "ok" && (
         <>
-          <p>Merci — votre abonnement MIKBOOK est actif.</p>
+          <p>
+            Merci — votre abonnement <span className="site-brand">MIKBOOK</span>{" "}
+            est actif.
+          </p>
           {email && <p className="subscribe-page__meta">{email}</p>}
           <Link href="/">Retour à l&apos;accueil</Link>
         </>

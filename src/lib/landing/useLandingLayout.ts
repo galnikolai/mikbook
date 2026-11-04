@@ -2,24 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ColumnId, ImageItem, LandingLayout } from "./layout-types";
-import { STORAGE_KEY } from "./layout-types";
+import { normalizeLayout, STORAGE_KEY } from "./layout-types";
 import {
   clampImageInColumn,
   ensureColumnOrders,
+  moveOrder,
   reflowColumn,
   sortByOrder,
 } from "./stack";
-
-function isLandingLayout(value: unknown): value is LandingLayout {
-  if (!value || typeof value !== "object") return false;
-  const v = value as LandingLayout;
-  return (
-    v.version === 1 &&
-    Array.isArray(v.images) &&
-    typeof v.contentHeight === "number" &&
-    !!v.columnWidths
-  );
-}
 
 function hydrate(raw: LandingLayout): LandingLayout {
   return {
@@ -32,8 +22,9 @@ async function fetchSeed(): Promise<LandingLayout> {
   const res = await fetch("/landing/layout.json", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load layout seed");
   const data: unknown = await res.json();
-  if (!isLandingLayout(data)) throw new Error("Invalid layout seed");
-  return hydrate(data);
+  const normalized = normalizeLayout(data);
+  if (!normalized) throw new Error("Invalid layout seed");
+  return hydrate(normalized);
 }
 
 function aspectsFrom(images: ImageItem[]): Record<string, number> {
@@ -56,10 +47,10 @@ export function useLandingLayout() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
-          const parsed: unknown = JSON.parse(raw);
-          if (isLandingLayout(parsed)) {
+          const normalized = normalizeLayout(JSON.parse(raw) as unknown);
+          if (normalized) {
             if (!cancelled) {
-              setLayout(hydrate(parsed));
+              setLayout(hydrate(normalized));
               setReady(true);
             }
             return;
@@ -122,6 +113,17 @@ export function useLandingLayout() {
   const updateImage = useCallback(
     (id: string, patch: Partial<ImageItem>) => {
       updateLayout((prev) => {
+        if (patch.order !== undefined) {
+          const target = prev.images.find((i) => i.id === id);
+          if (!target) return prev;
+          const colCount = prev.images.filter((i) => i.column === target.column).length;
+          const maxIdx = Math.max(0, Math.min(49, colCount - 1));
+          const next = Math.max(0, Math.min(maxIdx, Math.floor(patch.order)));
+          let images = moveOrder(prev.images, id, next);
+          images = reflow(images, target.column);
+          return { ...prev, images };
+        }
+
         let images = prev.images.map((img) => {
           if (img.id !== id) return img;
           const merged = { ...img, ...patch };
@@ -253,6 +255,37 @@ export function useLandingLayout() {
     URL.revokeObjectURL(url);
   }, [layout]);
 
+  /** Relative order nudge from current state (safe for rapid key repeats). */
+  const nudgeOrder = useCallback(
+    (id: string, delta: number) => {
+      updateLayout((prev) => {
+        const target = prev.images.find((i) => i.id === id);
+        if (!target) return prev;
+        const colCount = prev.images.filter((i) => i.column === target.column).length;
+        const maxIdx = Math.max(0, Math.min(49, colCount - 1));
+        const next = Math.max(0, Math.min(maxIdx, (target.order ?? 0) + delta));
+        if (next === (target.order ?? 0)) return prev;
+        let images = moveOrder(prev.images, id, next);
+        images = reflow(images, target.column);
+        return { ...prev, images };
+      });
+    },
+    [updateLayout, reflow],
+  );
+
+  const nudgeX = useCallback(
+    (id: string, delta: number) => {
+      updateLayout((prev) => {
+        const images = prev.images.map((img) => {
+          if (img.id !== id) return img;
+          return clampImageInColumn({ ...img, x: img.x + delta }, "x");
+        });
+        return { ...prev, images };
+      });
+    },
+    [updateLayout],
+  );
+
   return {
     layout,
     ready,
@@ -265,5 +298,7 @@ export function useLandingLayout() {
     reset,
     exportJson,
     setColumnWidth,
+    nudgeOrder,
+    nudgeX,
   };
 }
