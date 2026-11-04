@@ -64,9 +64,11 @@ export function ChapterMedia({
     };
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.dataset.lightbox = "open";
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prevOverflow;
+      delete document.documentElement.dataset.lightbox;
       window.removeEventListener("keydown", onKey);
     };
   }, [open, close, locked]);
