@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 import {
+  BLURRED_TOPIC_IMAGE,
   chapterTitle,
   getAdjacentTopic,
   getChapterContent,
@@ -10,6 +12,7 @@ import {
   getTopic,
 } from "@/lib/chapters/content";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { openSubscribeWidget } from "@/lib/subscribe";
 import { ChapterMedia } from "./ChapterMedia";
 
 type Props = {
@@ -35,6 +38,15 @@ export function TopicView({ chapterN, topicId }: Props) {
   const schemaImage = Boolean(
     imageSrcs?.length || topic?.item.imageSrc || content?.topicImageSrc,
   );
+  const locked =
+    !imageSrcs?.length &&
+    !topic?.item.imageSrc &&
+    content?.topicImageSrc === BLURRED_TOPIC_IMAGE;
+
+  useEffect(() => {
+    if (!locked) return;
+    openSubscribeWidget();
+  }, [locked, topicId]);
 
   if (!meta || !topic) {
     return (
@@ -128,6 +140,7 @@ export function TopicView({ chapterN, topicId }: Props) {
           src={imageSrc}
           srcs={imageSrcs}
           schema={schemaImage}
+          locked={locked}
         />
       ) : (
         <aside className="chapter-media chapter-media--empty" aria-hidden />

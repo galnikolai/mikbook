@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { AppProviders } from "@/components/AppProviders";
 import "./globals.css";
 
 const neueHaas = localFont({
@@ -54,7 +55,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="fr"
       className={`${neueHaas.variable} ${geistMono.variable} ${futuraBrand.variable} h-full antialiased`}
     >
-      <body className={`${neueHaas.className} min-h-full`}>{children}</body>
+      <body className={`${neueHaas.className} min-h-full`}>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }

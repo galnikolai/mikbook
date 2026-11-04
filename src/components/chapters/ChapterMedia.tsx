@@ -2,11 +2,14 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { openSubscribeWidget } from "@/lib/subscribe";
 
 type Props = {
   src?: string;
   srcs?: string[];
   schema?: boolean;
+  /** Blurred paywall teaser — click opens subscribe widget */
+  locked?: boolean;
 };
 
 const DOUBLE_TAP_MS = 300;
@@ -18,7 +21,12 @@ function clampZoom(value: number) {
   return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(value * 100) / 100));
 }
 
-export function ChapterMedia({ src, srcs, schema = false }: Props) {
+export function ChapterMedia({
+  src,
+  srcs,
+  schema = false,
+  locked = false,
+}: Props) {
   const pages = srcs?.length ? srcs : src ? [src] : [];
   const [open, setOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -38,7 +46,7 @@ export function ChapterMedia({ src, srcs, schema = false }: Props) {
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || locked) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
       if (e.key === "+" || e.key === "=") {
@@ -61,13 +69,17 @@ export function ChapterMedia({ src, srcs, schema = false }: Props) {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKey);
     };
-  }, [open, close]);
+  }, [open, close, locked]);
 
   if (pages.length === 0) {
     return <aside className="chapter-media chapter-media--empty" aria-hidden />;
   }
 
   const openLightbox = () => {
+    if (locked) {
+      openSubscribeWidget();
+      return;
+    }
     setZoom(1);
     setOpen(true);
   };
@@ -77,7 +89,15 @@ export function ChapterMedia({ src, srcs, schema = false }: Props) {
     openLightbox();
   };
 
+  const onClick = () => {
+    if (locked) openSubscribeWidget();
+  };
+
   const onTouchEnd = (e: React.TouchEvent) => {
+    if (locked) {
+      openSubscribeWidget();
+      return;
+    }
     const now = Date.now();
     if (now - lastTapRef.current < DOUBLE_TAP_MS) {
       e.preventDefault();
@@ -127,6 +147,7 @@ export function ChapterMedia({ src, srcs, schema = false }: Props) {
     "chapter-media",
     schema ? "chapter-media--schema" : null,
     stack ? "chapter-media--stack" : null,
+    locked ? "chapter-media--locked" : null,
   ]
     .filter(Boolean)
     .join(" ");
@@ -143,11 +164,12 @@ export function ChapterMedia({ src, srcs, schema = false }: Props) {
     <>
       <aside
         className={mediaClass}
+        onClick={onClick}
         onDoubleClick={onDoubleClick}
         onTouchEnd={onTouchEnd}
         role="button"
         tabIndex={0}
-        aria-label="Agrandir l'image"
+        aria-label={locked ? "S'abonner pour voir" : "Agrandir l'image"}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
@@ -184,7 +206,7 @@ export function ChapterMedia({ src, srcs, schema = false }: Props) {
         )}
       </aside>
 
-      {open ? (
+      {open && !locked ? (
         <div
           className={lightboxClass}
           role="dialog"
