@@ -6,7 +6,6 @@ import {
   getChapterContent,
   getTopic,
 } from "@/lib/chapters/content";
-import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { CHAPTERS } from "@/lib/i18n/dictionary";
 
 type Props = {
@@ -38,18 +37,16 @@ async function TopicPageInner({ params }: Props) {
 
 export default function TopicPage({ params }: Props) {
   return (
-    <LocaleProvider>
-      <Suspense
-        fallback={
-          <div className="chapter-page">
-            <p className="chapter-empty" style={{ padding: "2rem 16px" }}>
-              …
-            </p>
-          </div>
-        }
-      >
-        <TopicPageInner params={params} />
-      </Suspense>
-    </LocaleProvider>
+    <Suspense
+      fallback={
+        <div className="chapter-page">
+          <p className="chapter-empty" style={{ padding: "2rem 16px" }}>
+            …
+          </p>
+        </div>
+      }
+    >
+      <TopicPageInner params={params} />
+    </Suspense>
   );
 }

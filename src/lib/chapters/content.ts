@@ -15,6 +15,9 @@ export type TopicSection = {
   items: TopicItem[];
 };
 
+/** Blurred schema stand-in — paywall teaser when a topic has no real illustration */
+export const BLURRED_TOPIC_IMAGE = "/chapters/schema-placeholder.png";
+
 export type ChapterContent = {
   n: number;
   imageSrc?: string;
@@ -33,8 +36,7 @@ export type FlatTopic = {
 const PEDIATRIE: ChapterContent = {
   n: 15,
   imageSrc: "/chapters/pediatrie.png",
-  /** Blurred schema stand-in for topics without real illustrations yet */
-  topicImageSrc: "/chapters/schema-placeholder.png",
+  topicImageSrc: BLURRED_TOPIC_IMAGE,
   sections: [
     {
       items: [

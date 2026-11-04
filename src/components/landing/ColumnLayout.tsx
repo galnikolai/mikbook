@@ -130,8 +130,6 @@ export function ColumnLayout({
 }: Props) {
   const gridCols = percentsToGrid(splitsToPercents(layout.columnSplits));
 
-  const { t } = useLocale();
-
   return (
     <div
       className="min-h-dvh bg-[var(--landing-bg)] text-[var(--landing-fg)]"
@@ -139,9 +137,6 @@ export function ColumnLayout({
         if (editMode) onSelect(null);
       }}
     >
-      <p className="landing-corner-brand" aria-hidden>
-        {t.brand.toLowerCase()}.
-      </p>
       <div
         className="landing-kline-grid hidden min-[900px]:grid"
         style={editMode ? { gridTemplateColumns: gridCols } : undefined}

@@ -2,11 +2,9 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { useLandingLayout } from "@/lib/landing/useLandingLayout";
 import { ColumnLayout } from "./ColumnLayout";
 import { ImageEditorPanel } from "./ImageEditorPanel";
-import { SubscribeWidget } from "./SubscribeWidget";
 
 function isEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
@@ -75,7 +73,7 @@ export function LandingShell() {
   }
 
   return (
-    <LocaleProvider>
+    <>
       <ColumnLayout
         layout={layout}
         editMode={editMode}
@@ -102,7 +100,6 @@ export function LandingShell() {
           }
         />
       )}
-      {!editMode && <SubscribeWidget />}
-    </LocaleProvider>
+    </>
   );
 }
